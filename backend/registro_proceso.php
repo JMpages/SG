@@ -3,10 +3,10 @@
 require_once 'config/config.php';
 
 // Si ya está logeado, se redirige
-if(isset($_SESSION['usuario'])){
-    header("Location: ../view/dashboard.php");
-    exit();
-}
+// if(isset($_SESSION['usuario'])){
+//     header("Location: ../view/dashboard.php");
+//     exit();
+// }
 
 // Validar que se recibió una petición POST
 if($_SERVER['REQUEST_METHOD'] !== 'POST'){

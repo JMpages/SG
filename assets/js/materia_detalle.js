@@ -57,9 +57,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(result.message || 'No se pudieron cargar los datos.');
                 }
             } catch (error) {
+                // MODO DEMO: Si falla el backend (GitHub Pages), usar datos de prueba
+                console.warn("Backend no disponible, usando datos de prueba para demo.");
+                this.state.materia = {
+                    nombre: "Materia Demo (Visualización)",
+                    criterios: [
+                        { id: 1, nombre: "Primer Parcial", cantidad_evaluaciones: 1, porcentaje: 30, notas: { 1: { real: 4.5, simulacion: null } } },
+                        { id: 2, nombre: "Segundo Parcial", cantidad_evaluaciones: 1, porcentaje: 30, notas: { 1: { real: null, simulacion: null } } },
+                        { id: 3, nombre: "Trabajos", cantidad_evaluaciones: 2, porcentaje: 40, notas: { 1: { real: 5.0, simulacion: null }, 2: { real: 4.2, simulacion: null } } }
+                    ]
+                };
+                this.populateInitialNotas();
                 this.state.isLoading = false;
                 this.render();
-                showToast(error.message, 'error');
+                this.updateSummary();
+                
+                // this.state.isLoading = false;
+                // this.render();
+                // showToast(error.message, 'error');
             }
         },
 

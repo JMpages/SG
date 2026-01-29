@@ -6,11 +6,11 @@ require_once 'config/config.php';
 
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['usuario_id'])) {
-    http_response_code(403);
-    echo json_encode(['status' => 'error', 'message' => 'No autorizado']);
-    exit;
-}
+// if (!isset($_SESSION['usuario_id'])) {
+//     http_response_code(403);
+//     echo json_encode(['status' => 'error', 'message' => 'No autorizado']);
+//     exit;
+// }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

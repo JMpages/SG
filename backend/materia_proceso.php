@@ -11,9 +11,9 @@ header('Content-Type: application/json');
 
 try {
     // Verificar que el usuario esté logueado
-    if (!isset($_SESSION['usuario_id'])) {
-        throw new Exception('Acceso denegado. Debes iniciar sesión.', 403);
-    }
+//    if (!isset($_SESSION['usuario_id'])) {
+//        throw new Exception('Acceso denegado. Debes iniciar sesión.', 403);
+//    }
 
     // Verificar que sea una petición POST
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
