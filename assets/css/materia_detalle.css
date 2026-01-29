@@ -1,0 +1,242 @@
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+    --primary-dark: #764ba2;
+    --text-primary: #333;
+    --text-secondary: #555;
+    --text-muted: #999;
+    --border-color: #e0e0e0;
+    --border-light: #f0f0f0;
+    --bg-light: #f8f9fa;
+    --bg-body: #ffffff;
+    --secondary-color: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.2);
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --text-primary: #e0e0e0;
+        --text-secondary: #b0b0b0;
+        --text-muted: #808080;
+        --border-color: #404040;
+        --border-light: #2a2a2a;
+        --bg-light: #1e1e1e;
+        --bg-body: #121212;
+        --secondary-color: #1e1e1e;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
+    }
+}
+
+[data-theme="dark"] {
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-muted: #808080;
+    --border-color: #404040;
+    --border-light: #2a2a2a;
+    --bg-light: #1e1e1e;
+    --bg-body: #121212;
+    --secondary-color: #1e1e1e;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+}
+
+/* Header de la materia */
+.materia-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+}
+
+.materia-header h1 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.materia-header .breadcrumb {
+    margin-bottom: 0.5rem;
+}
+
+.materia-header .breadcrumb-item a {
+    color: white;
+    opacity: 0.8;
+    text-decoration: none;
+}
+
+.materia-header .breadcrumb-item a:hover {
+    opacity: 1;
+}
+
+.materia-header .breadcrumb-item.active {
+    color: white;
+    font-weight: 600;
+}
+
+/* Tarjeta de Criterio */
+.criterio-card {
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.criterio-card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.criterio-card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.criterio-card-header .badge {
+    font-size: 0.8rem;
+}
+
+.criterio-card-body {
+    padding: 1.25rem;
+}
+
+.evaluacion-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.evaluacion-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.evaluacion-row:first-child {
+    padding-top: 0;
+}
+
+.evaluacion-label {
+    flex-basis: 40%;
+    color: var(--text-secondary);
+}
+
+.evaluacion-input {
+    flex-grow: 1;
+}
+
+.evaluacion-input .form-control {
+    text-align: center;
+    font-weight: 600;
+    background-color: var(--bg-body);
+}
+
+.form-control.simulacion {
+    border-style: dashed;
+    border-color: var(--primary-color);
+}
+
+/* Sidebar de Resumen */
+.summary-sidebar {
+    position: sticky;
+    top: 2rem;
+    background: var(--bg-light);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.card-resumen-final {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.card-resumen-final .label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.card-resumen-final .nota {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0.5rem 0;
+}
+
+.barra-progreso {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.barra-progreso .barra {
+    height: 100%;
+    background-color: white;
+    border-radius: 4px;
+    transition: width 0.3s ease-in-out;
+}
+
+.resumen-criterio-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--secondary-color);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-light);
+}
+
+.resumen-criterio-item .nombre {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.resumen-criterio-item .nota-promedio {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Switch de simulación */
+.form-switch .form-check-input {
+    width: 2.5em;
+    height: 1.25em;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Toast (ya está en materias.css, pero por si acaso) */
+[data-theme="dark"] .toast {
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .toast-header {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .toast .btn-close {
+    filter: invert(1) brightness(0.8);
+}
