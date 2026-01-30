@@ -26,6 +26,7 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
             <?php if(isset($_SESSION['usuario'])): ?>
                 <li><a href="dashboard.php" class="nav-link <?php echo $pagina_actual == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a></li>
                 <li><a href="materias.php" class="nav-link <?php echo $pagina_actual == 'materias.php' ? 'active' : ''; ?>">Materias</a></li>
+                <li><a href="tareas.php" class="nav-link <?php echo $pagina_actual == 'tareas.php' ? 'active' : ''; ?>">Tareas</a></li>
             <?php endif; ?>
         </ul>
 

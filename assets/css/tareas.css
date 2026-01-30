@@ -1,0 +1,292 @@
+/* ===== VARIABLES DE COLOR ===== */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+    --text-primary: #333;
+    --text-secondary: #555;
+    --text-muted: #999;
+    --border-color: #e0e0e0;
+    --bg-light: #fffdf4;
+    --bg-body: #fffaf0;
+    --secondary-color: #ffffff;
+    --input-bg: #f1f3f5; /* Fondo suave para inputs estilo 'filled' */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Tema oscuro */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --text-primary: #e6eef9;
+        --text-secondary: #95a9bb;
+        --text-muted: #8899a8;
+        --border-color: #404040;
+        --bg-light: #07182b;
+        --bg-body: #061226;
+        --secondary-color: #082a3a;
+        --input-bg: #0b2236; /* Fondo oscuro para inputs */
+        --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
+    }
+}
+
+[data-theme="dark"] {
+    --text-primary: #e6eef9;
+    --text-secondary: #95a9bb;
+    --text-muted: #8899a8;
+    --border-color: #404040;
+    --bg-light: #07182b;
+    --bg-body: #061226;
+    --secondary-color: #082a3a;
+    --input-bg: #0b2236;
+    --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+}
+
+/* ===== HEADER ===== */
+.tareas-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+}
+
+.btn-agregar {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+}
+
+.btn-agregar:hover {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* ===== INPUTS ORIGINALES ===== */
+/* Estilo 'Filled' con borde inferior animado */
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    border: 2px solid transparent;
+    border-bottom: 2px solid var(--border-color);
+    border-radius: 0.5rem 0.5rem 0 0; /* Solo redondeado arriba */
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--input-bg); /* Mantiene el color oscuro en dark mode */
+    border-color: transparent;
+    border-bottom-color: var(--primary-color); /* Solo se ilumina abajo */
+    box-shadow: none; /* Quitamos el brillo azul por defecto de bootstrap */
+    color: var(--text-primary);
+}
+
+/* Solución para placeholders en modo oscuro */
+.form-control::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* Labels */
+.form-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ===== CARDS DE TAREAS ===== */
+.tarea-card {
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.tarea-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-sm);
+}
+
+.tarea-card.completada {
+    border-left: 5px solid #28a745;
+    opacity: 0.85;
+}
+
+.tarea-card.vencida {
+    border-left: 5px solid #dc3545;
+}
+
+.tarea-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.tarea-materia {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+    font-weight: 800;
+    background: rgba(102, 126, 234, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.tarea-titulo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.tarea-descripcion {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tarea-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    gap: 0.5rem;
+}
+
+.tarea-footer button {
+    flex: 1;
+}
+
+.tarea-fecha {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Mensajes de estado (vacío/carga) */
+#lista-tareas {
+    color: var(--text-primary);
+}
+
+/* ===== MODAL ===== */
+.modal-content {
+    background-color: var(--secondary-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-light);
+    border-radius: 1rem 1rem 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-light);
+    border-radius: 0 0 1rem 1rem;
+}
+
+.modal-title {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Ajuste para el botón de cerrar en modo oscuro */
+[data-theme="dark"] .btn-close {
+    filter: invert(1) brightness(0.8);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .btn-close {
+        filter: invert(1) brightness(0.8);
+    }
+}
+
+/* Dropdowns en modo oscuro */
+.dropdown-menu {
+    background-color: var(--secondary-color);
+    border-color: var(--border-color);
+}
+.dropdown-item {
+    color: var(--text-primary);
+}
+.dropdown-item:hover {
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+}
+
+/* ===== ESTADO VACÍO ===== */
+.empty-state, 
+#lista-tareas .text-center {
+    text-align: center;
+    padding: 3rem 1rem;
+    width: 100%;
+}
+
+.empty-state i,
+#lista-tareas .text-center i {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted) !important;
+    opacity: 0.7;
+}
+
+.empty-state p,
+#lista-tareas .text-center p {
+    color: var(--text-secondary) !important;
+    font-size: 1.1rem;
+}
+
+/* ===== TOASTS (NOTIFICACIONES) ===== */
+.toast {
+    background-color: var(--secondary-color);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.toast-header {
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+}
+
+.toast-body {
+    color: var(--text-primary);
+}
+
+/* Asegurar inversión del botón cerrar en el toast para modo oscuro */
+[data-theme="dark"] .toast .btn-close {
+    filter: invert(1) brightness(0.8);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .toast .btn-close {
+        filter: invert(1) brightness(0.8);
+    }
+}

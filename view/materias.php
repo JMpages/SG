@@ -47,7 +47,7 @@ if(!isset($_SESSION['usuario'])){
                         </div>
 
                         <button class="btn btn-agregar flex-grow-1 flex-md-grow-0" data-bs-toggle="modal" data-bs-target="#agregarMateriaModal">
-                            <i class="fas fa-plus"></i> <span class="d-none d-sm-inline">Agregar Materia</span><span class="d-inline d-sm-none">Agregar</span>
+                            <i class="fas fa-plus me-2"></i><span class="d-none d-sm-inline">Agregar Materia</span><span class="d-inline d-sm-none">Agregar</span>
                         </button>
                     </div>
                 </div>
