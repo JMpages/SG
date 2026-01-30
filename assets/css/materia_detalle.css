@@ -7,47 +7,64 @@
     --text-muted: #999;
     --border-color: #e0e0e0;
     --border-light: #f0f0f0;
-    --bg-light: #f8f9fa;
-    --bg-body: #ffffff;
-    --secondary-color: #f8f9fa;
+    --bg-light: #fffdf4; /* crema suave para elementos */
+    --bg-body: #fffaf0; /* fondo principal (crema) */
+    --secondary-color: #e6f0f6; /* tarjetas con tono azul-gris muy suave */
+    --card-gradient: linear-gradient(180deg, #dfeff6 0%, #cfe7ee 100%);
+    --card-text-color: #2b2b2b;
+
+    /* Badges */
+    --badge-active-bg: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --badge-active-color: #ffffff;
+
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.2);
+
     --success-color: #28a745;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
 }
 
+/* Tema oscuro - Detectar prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --text-primary: #e0e0e0;
-        --text-secondary: #b0b0b0;
-        --text-muted: #808080;
+        --text-primary: #e6eef9;
+        --text-secondary: #95a9bb;
+        --text-muted: #8899a8;
         --border-color: #404040;
         --border-light: #2a2a2a;
-        --bg-light: #1e1e1e;
-        --bg-body: #121212;
-        --secondary-color: #1e1e1e;
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+        --bg-light: #07182b;
+        --bg-body: #061226;
+        --secondary-color: #082a3a;
+        --card-gradient: linear-gradient(180deg, #0b3348 0%, #0a3b55 100%);
+        --card-text-color: #f6fbff;
+        --border-color: rgba(255,255,255,0.06);
+        --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
         --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
     }
 }
 
+/* Tema oscuro - Activado por data-theme */
 [data-theme="dark"] {
-    --text-primary: #e0e0e0;
-    --text-secondary: #b0b0b0;
-    --text-muted: #808080;
+    --text-primary: #e6eef9;
+    --text-secondary: #95a9bb;
+    --text-muted: #8899a8;
     --border-color: #404040;
     --border-light: #2a2a2a;
-    --bg-light: #1e1e1e;
-    --bg-body: #121212;
-    --secondary-color: #1e1e1e;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --bg-light: #07182b;
+    --bg-body: #061226;
+    --secondary-color: #082a3a;
+    --card-gradient: linear-gradient(180deg, #061226 0%, #0b2a4a 100%);
+    --card-text-color: #f6fbff;
+    --border-color: rgba(255,255,255,0.06);
+    --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
     --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
 }
 
 body {
     background-color: var(--bg-body);
     color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Header de la materia */
@@ -92,17 +109,22 @@ body {
 }
 
 .criterio-card-header {
-    padding: 1rem 1.25rem;
+    background: var(--card-gradient);
+    color: var(--card-text-color);
+    padding: 1.25rem;
     border-bottom: 1px solid var(--border-light);
+    border-radius: 0.75rem 0.75rem 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
 }
 
 .criterio-card-header h3 {
     font-size: 1.1rem;
     font-weight: 600;
     margin: 0;
+    color: var(--card-text-color);
 }
 
 .criterio-card-header .badge {
@@ -141,7 +163,9 @@ body {
 .evaluacion-input .form-control {
     text-align: center;
     font-weight: 600;
-    background-color: var(--bg-body);
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 .form-control.simulacion {
@@ -238,5 +262,36 @@ body {
 }
 
 [data-theme="dark"] .toast .btn-close {
+    filter: invert(1) brightness(0.8);
+}
+
+/* Modal Styles */
+.modal-content {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.modal-footer {
+    background-color: var(--bg-light);
+    border-top: 1px solid var(--border-light);
+}
+
+.modal-title {
+    color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .modal-header .btn-close {
+        filter: invert(1) brightness(0.8);
+    }
+}
+
+[data-theme="dark"] .modal-header .btn-close {
     filter: invert(1) brightness(0.8);
 }

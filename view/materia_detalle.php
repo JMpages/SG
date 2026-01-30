@@ -46,9 +46,14 @@ if (!$materia_id) {
             <div class="col-lg-8">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="h4 mb-0"><i class="fas fa-edit me-2"></i>Registro de Calificaciones</h2>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="modoSimulacion">
-                        <label class="form-check-label" for="modoSimulacion">Modo Simulación</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-sm btn-outline-secondary d-none" id="btn-sync-real" title="Reiniciar simulación con notas reales">
+                            <i class="fas fa-sync-alt me-1"></i> Traer notas reales
+                        </button>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="modoSimulacion">
+                            <label class="form-check-label" for="modoSimulacion">Modo Simulación</label>
+                        </div>
                     </div>
                 </div>
                 <div id="criterios-container" class="d-grid gap-4">
@@ -101,6 +106,25 @@ if (!$materia_id) {
             </div>
             <div class="toast-body" id="toastMessage">
                 Mensaje de notificación.
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Confirmar Acción</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro? Esto sobrescribirá los datos de la simulación con las notas reales actuales.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm-action">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>

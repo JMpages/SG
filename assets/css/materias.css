@@ -8,9 +8,18 @@
     --text-muted: #999;
     --border-color: #e0e0e0;
     --border-light: #f0f0f0;
-    --bg-light: #f8f9fa;
-    --bg-body: #ffffff;
-    --secondary-color: #f8f9fa;
+    --bg-light: #fffdf4; /* crema suave para elementos */
+    --bg-body: #fffaf0; /* fondo principal (crema) */
+    --secondary-color: #e6f0f6; /* tarjetas con tono azul-gris muy suave para distinguir del fondo */
+    --card-gradient: linear-gradient(180deg, #dfeff6 0%, #cfe7ee 100%); /* header distinto del cuerpo (modo claro) */
+    --card-text-color: #2b2b2b; /* texto oscuro para cabeceras */
+
+    /* Badges */
+    --badge-active-bg: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --badge-active-color: #ffffff;
+    --badge-inactive-bg: #e9ecef;
+    --badge-inactive-color: #212529;
+
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.2);
 }
@@ -18,30 +27,44 @@
 /* Tema oscuro - Detectar prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --text-primary: #e0e0e0;
-        --text-secondary: #b0b0b0;
-        --text-muted: #808080;
+        --text-primary: #e6eef9;
+        --text-secondary: #95a9bb; /* descripción: tono azulado y más apagado */
+        --text-muted: #8899a8;
         --border-color: #404040;
         --border-light: #2a2a2a;
-        --bg-light: #1e1e1e;
-        --bg-body: #121212;
-        --secondary-color: #1e1e1e;
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+        --bg-light: #07182b; /* elementos ligeramente más claros */
+        --bg-body: #061226; /* fondo principal (azul medianoche) */
+        --secondary-color: #082a3a; /* tarjetas más contrastadas contra el fondo midnight */
+        --card-gradient: linear-gradient(180deg, #0b3348 0%, #0a3b55 100%); /* header más claro que el cuerpo para crear separación */
+        --card-text-color: #f6fbff; /* título: más brillante para destacar */
+        --border-color: rgba(255,255,255,0.06); /* borde sutil sobre fondo oscuro */
+        --badge-active-bg: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+        --badge-active-color: #e6eef9;
+        --badge-inactive-bg: rgba(255,255,255,0.06);
+        --badge-inactive-color: #b8c6d6;
+        --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
         --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
     }
-}
+} 
 
 /* Tema oscuro - Activado por data-theme */
 [data-theme="dark"] {
-    --text-primary: #e0e0e0;
-    --text-secondary: #b0b0b0;
-    --text-muted: #808080;
+    --text-primary: #e6eef9;
+    --text-secondary: #95a9bb; /* descripción: tono azulado y más apagado */
+    --text-muted: #8899a8;
     --border-color: #404040;
     --border-light: #2a2a2a;
-    --bg-light: #1e1e1e;
-    --bg-body: #121212;
-    --secondary-color: #1e1e1e;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --bg-light: #07182b; /* elementos ligeramente más claros */
+    --bg-body: #061226; /* fondo principal (azul medianoche) */
+    --secondary-color: #082a3a; /* tarjetas más contrastadas contra el fondo midnight */
+    --card-gradient: linear-gradient(180deg, #061226 0%, #0b2a4a 100%);
+    --card-text-color: #f6fbff; /* título: más brillante para destacar */
+    --badge-active-bg: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+    --badge-active-color: #e6eef9;
+    --badge-inactive-bg: rgba(255,255,255,0.06);
+    --badge-inactive-color: #b8c6d6;
+    --border-color: rgba(255,255,255,0.06); /* borde sutil sobre fondo oscuro */
+    --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
     --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
 }
 
@@ -111,35 +134,55 @@ body {
 
 /* Header de card */
 .materia-card-header {
-    background: var(--primary-gradient);
-    color: white;
+    background: var(--card-gradient);
+    color: var(--card-text-color);
     padding: 1.5rem;
     border-radius: 1rem 1rem 0 0;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset; /* ligero detalle para separar del cuerpo */
+    border-bottom: 1px solid var(--border-color); /* separación tonal clara/oscura */
 }
 
 .materia-card-title {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
+    color: var(--card-text-color); /* asegurar que el título use la variable de título */
 }
 
 .materia-card-badge {
     font-size: 0.75rem;
     padding: 0.35rem 0.75rem;
     border-radius: 2rem;
-    background: rgba(255, 255, 255, 0.3);
-    color: white;
+    background: var(--badge-active-bg);
+    color: var(--badge-active-color);
     white-space: nowrap;
     flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+/* Cuando tenga la clase bg-secondary (inactiva) */
+.materia-card-badge.bg-secondary {
+    background: var(--badge-inactive-bg) !important;
+    color: var(--badge-inactive-color) !important;
+    border: 1px solid rgba(0,0,0,0.04) !important;
 }
 
 /* Body de card */
 .materia-card-body {
     padding: 1.5rem;
+}
+
+/* Asegurar que el texto de descripción de la card respete el tema */
+.materia-card .materia-card-body p.text-muted,
+.materia-card .materia-card-body .text-muted,
+.materia-card p.text-muted,
+.materia-card .text-muted {
+    color: var(--text-secondary) !important;
+    transition: color 0.15s ease;
 }
 
 /* Filas de información */
@@ -237,29 +280,80 @@ body {
 /* ===== VISTA DE LISTA (TOGGLE VIEW) ===== */
 .card-list-view {
     flex-direction: row;
-    align-items: stretch;
+    align-items: center;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-height: 56px;
+    border-radius: 0.25rem;
 }
 
 .card-list-view .materia-card-header {
-    flex: 0 0 140px; /* Ancho para móvil */
-    border-radius: 1rem 0 0 1rem;
-    border-right: 1px solid var(--border-light);
+    flex: 0 0 160px;
+    align-self: stretch;
+    border-radius: 0.25rem 0 0 0.25rem;
+    border-right: none;
     flex-direction: column;
     justify-content: center;
-    flex-shrink: 0;
+    padding: 0.5rem 1rem;
 }
 
 .card-list-view .materia-card-body {
     flex: 1;
-    border-bottom: none;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding: 0.25rem 1rem;
+    gap: 0;
+}
+
+.card-list-view .materia-card-footer {
+    flex: 0 0 auto;
+    border-top: none;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-self: center;
+}
+
+/* Corrección de botones alargados */
+.card-list-view .materia-card-footer button {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
 }
 
 @media (min-width: 768px) {
     .card-list-view .materia-card-header {
-        flex-basis: 250px; /* Ancho para pantallas más grandes */
+        flex: 0 0 200px;
+    }
+    
+    .card-list-view .materia-card-body {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 1.5rem;
+    }
+    
+    /* Reordenar: Criterios a la izquierda (order -1), Descripción a la derecha */
+    .card-list-view .materia-card-body > div {
+        order: -1;
+        min-width: 140px;
+    }
+
+    .card-list-view .materia-card-body p {
+        margin: 0;
+        flex: 0 1 auto;
+        max-width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        order: 1;
+        padding-left: 1rem;
+        border-left: 1px solid var(--border-light);
     }
 }
 
@@ -580,18 +674,29 @@ body {
     }
 }
 
-/* ===== BOTÓN ÍNDICE FLOTANTE (MÓVIL) ===== */
+/* ===== BOTÓN ÍNDICE FLOTANTE ===== */
 .btn-indice-flotante {
     position: fixed;
-    left: 0;
-    top: 25%; /* Altura desde arriba (ajustable) */
+    left: 2rem;
+    bottom: 2rem;
+    top: auto;
     z-index: 1040; /* Por encima del contenido pero debajo del menú abierto */
-    border-radius: 0 50% 50% 0; /* Forma de pestaña redondeada */
-    padding: 0.6rem 1rem 0.6rem 0.6rem;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    background: var(--primary-color);
-    border: 1px solid var(--primary-dark);
-    border-left: none;
+    border-radius: 50%;
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    background: var(--primary-gradient);
+    border: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-indice-flotante:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
 }
 
 /* Ajuste ancho offcanvas en móvil para que no ocupe todo */

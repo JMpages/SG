@@ -17,11 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
             notaFinalTotal: document.getElementById('nota-final-total'),
             barraNotaFinal: document.getElementById('barra-nota-final'),
             modoSimulacionSwitch: document.getElementById('modoSimulacion'),
+            btnSync: document.getElementById('btn-sync-real'),
             btnGuardar: document.getElementById('btn-guardar-notas'),
+            confirmModalEl: document.getElementById('confirmModal'),
+            btnConfirmAction: document.getElementById('btn-confirm-action'),
         },
 
         // Inicialización
         init() {
+            this.confirmModal = new bootstrap.Modal(this.elements.confirmModalEl);
             this.addEventListeners();
             this.loadMateriaData();
         },
@@ -29,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Event Listeners
         addEventListeners() {
             this.elements.modoSimulacionSwitch.addEventListener('change', this.handleModoSimulacionToggle.bind(this));
+            this.elements.btnSync.addEventListener('click', this.handleSyncRealToSim.bind(this));
+            this.elements.btnConfirmAction.addEventListener('click', this.executeSync.bind(this));
             this.elements.btnGuardar.addEventListener('click', this.handleGuardarNotas.bind(this));
             // Delegación de eventos para los inputs de notas
             this.elements.criteriosContainer.addEventListener('input', this.handleNotaInputChange.bind(this));
@@ -244,16 +250,52 @@ document.addEventListener('DOMContentLoaded', () => {
         // Manejadores de eventos
         handleModoSimulacionToggle(e) {
             this.state.esModoSimulacion = e.target.checked;
-            // Si activamos simulación, copiamos las notas reales a las de simulación si están vacías
+            
             if (this.state.esModoSimulacion) {
+                // UI: Mostrar botón sync y cambiar texto guardar
+                this.elements.btnSync.classList.remove('d-none');
+                this.elements.btnGuardar.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Simulación';
+                this.elements.btnGuardar.classList.replace('btn-primary', 'btn-warning'); // Cambio visual para alertar
+
+                // Lógica: Rellenar huecos vacíos en simulación con datos reales
                 for (const key in this.state.notas) {
                     if (this.state.notas[key].simulacion === null || this.state.notas[key].simulacion === undefined) {
                         this.state.notas[key].simulacion = this.state.notas[key].real;
                     }
                 }
+            } else {
+                // UI: Ocultar botón sync y restaurar texto guardar
+                this.elements.btnSync.classList.add('d-none');
+                this.elements.btnGuardar.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
+                this.elements.btnGuardar.classList.replace('btn-warning', 'btn-primary');
             }
+            
             this.renderCriterios();
             this.updateSummary();
+        },
+
+        handleSyncRealToSim() {
+            this.confirmModal.show();
+        },
+
+        executeSync() {
+            let notasEncontradas = 0;
+            for (const key in this.state.notas) {
+                if (this.state.notas[key].real !== null && this.state.notas[key].real !== '') {
+                    notasEncontradas++;
+                }
+                this.state.notas[key].simulacion = this.state.notas[key].real;
+            }
+            
+            this.renderCriterios();
+            this.updateSummary();
+            this.confirmModal.hide();
+            
+            if (notasEncontradas > 0) {
+                showToast('Simulación sincronizada con notas reales.', 'success');
+            } else {
+                showToast('No se encontraron notas reales para sincronizar.', 'warning');
+            }
         },
 
         handleNotaInputChange(e) {

@@ -66,8 +66,8 @@ if(!isset($_SESSION['usuario'])){
         </div>
     </main>
 
-    <!-- Botón flotante Índice (Solo Móvil) -->
-    <button class="btn btn-primary d-md-none btn-indice-flotante" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasIndice">
+    <!-- Botón flotante Índice -->
+    <button class="btn btn-primary btn-indice-flotante" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasIndice" title="Índice de materias">
         <i class="fas fa-list-ul"></i>
     </button>
 
