@@ -1,6 +1,7 @@
 <?php
 // Configuración de la base de datos
 require_once '../backend/config/config.php';
+require_once '../backend/autologin.php';
 
 // Si ya está logeado, se redirige
 if(isset($_SESSION['usuario'])){

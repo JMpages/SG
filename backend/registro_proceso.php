@@ -101,7 +101,7 @@ try {
     $_SESSION['usuario_id'] = $pdo->lastInsertId();
     $_SESSION['mensaje_exito'] = "¡Registro exitoso! Bienvenido " . htmlspecialchars($nombre);
     
-    header("Location: ../view/index.php");
+    header("Location: ../view/dashboard.php");
     exit();
     
 } catch(PDOException $e){

@@ -1,6 +1,7 @@
 <?php
 // Configuración y sesión
 require_once '../backend/config/config.php';
+require_once '../backend/autologin.php';
 
 // Verificar si el usuario está logueado
 if(!isset($_SESSION['usuario'])){

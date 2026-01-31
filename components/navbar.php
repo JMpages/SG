@@ -3,9 +3,146 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $pagina_actual = basename($_SERVER['PHP_SELF']);
+
+// Detectar si estamos en la raíz (index.php) o en una subcarpeta (view/)
+$es_root = file_exists('view/login.php'); // Truco: si existe esta ruta relativa, estamos en root
+$ruta_base = $es_root ? '' : '../';
+$ruta_vistas = $es_root ? 'view/' : '';
+$ruta_backend = $es_root ? 'backend/' : '../backend/';
 ?>
 
-<link rel="stylesheet" href="../assets/css/navbar.css">
+<link rel="stylesheet" href="<?php echo $ruta_base; ?>assets/css/navbar.css">
+
+<style>
+/* Mejoras para móvil inyectadas */
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-wrap: wrap;
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .navbar-logo {
+        flex-grow: 1;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 21px;
+        cursor: pointer;
+        z-index: 100;
+    }
+    
+    .hamburger span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background-color: var(--text-primary);
+        border-radius: 3px;
+        transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+    }
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+    }
+
+    .navbar-menu {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        background-color: var(--secondary-color);
+        background-color: color-mix(in srgb, var(--secondary-color) 90%, transparent);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        margin-top: 1rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        order: 3;
+        animation: slideDown 0.3s ease forwards;
+    }
+
+    .navbar-menu.active {
+        display: flex;
+    }
+
+    .navbar-menu li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .navbar-menu .nav-link {
+        display: block;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .navbar-right {
+        display: none;
+        width: 100%;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background-color: var(--secondary-color);
+        background-color: color-mix(in srgb, var(--secondary-color) 90%, transparent);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        margin-top: 0.5rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
+        order: 4;
+        animation: slideDown 0.3s ease forwards;
+    }
+
+    .navbar-right.mobile-show {
+        display: flex;
+    }
+    
+    .user-menu {
+        width: 100%;
+    }
+    
+    .user-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem;
+        background: var(--bg-light);
+        border-radius: 0.5rem;
+    }
+    
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        text-align: center;
+        padding-top: 0.5rem;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+</style>
 
 <nav class="navbar-modern">
     <div class="navbar-container">
@@ -21,12 +158,12 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
 
         <!-- Menu Principal -->
         <ul class="navbar-menu" id="navbarMenu">
-            <li><a href="index.php" class="nav-link <?php echo $pagina_actual == 'index.php' ? 'active' : ''; ?>">Inicio</a></li>
+            <li><a href="<?php echo $ruta_base; ?>index.php" class="nav-link <?php echo $pagina_actual == 'index.php' ? 'active' : ''; ?>">Inicio</a></li>
             
             <?php if(isset($_SESSION['usuario'])): ?>
-                <li><a href="dashboard.php" class="nav-link <?php echo $pagina_actual == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a></li>
-                <li><a href="materias.php" class="nav-link <?php echo $pagina_actual == 'materias.php' ? 'active' : ''; ?>">Materias</a></li>
-                <li><a href="tareas.php" class="nav-link <?php echo $pagina_actual == 'tareas.php' ? 'active' : ''; ?>">Tareas</a></li>
+                <li><a href="<?php echo $ruta_vistas; ?>dashboard.php" class="nav-link <?php echo $pagina_actual == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a></li>
+                <li><a href="<?php echo $ruta_vistas; ?>materias.php" class="nav-link <?php echo $pagina_actual == 'materias.php' ? 'active' : ''; ?>">Materias</a></li>
+                <li><a href="<?php echo $ruta_vistas; ?>tareas.php" class="nav-link <?php echo $pagina_actual == 'tareas.php' ? 'active' : ''; ?>">Tareas</a></li>
             <?php endif; ?>
         </ul>
 
@@ -49,7 +186,7 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
                         <span><?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
                     </button>
                     <div class="dropdown-menu" id="dropdown">
-                        <a href="../backend/logout.php" class="dropdown-item">
+                        <a href="<?php echo $ruta_backend; ?>logout.php" class="dropdown-item">
                             <svg class="icon-svg" viewBox="0 0 24 24">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -60,8 +197,8 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
                     </div>
                 </div>
             <?php else: ?>
-                <a href="login.php" class="btn-secondary">Iniciar Sesión</a>
-                <a href="registro.php" class="btn-primary">Registrarse</a>
+                <a href="<?php echo $ruta_vistas; ?>login.php" class="btn-secondary">Iniciar Sesión</a>
+                <a href="<?php echo $ruta_vistas; ?>registro.php" class="btn-primary">Registrarse</a>
             <?php endif; ?>
         </div>
     </div>
