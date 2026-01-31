@@ -708,3 +708,48 @@ body {
         max-width: 300px;
     }
 }
+
+/* ===== OFFCANVAS (ÍNDICE) ===== */
+.offcanvas {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+}
+
+.offcanvas-header {
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.offcanvas-title {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.offcanvas .btn-close {
+    color: var(--text-primary);
+}
+
+/* Ajuste para botón cerrar en tema oscuro */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .offcanvas .btn-close {
+        filter: invert(1) brightness(0.8);
+    }
+}
+
+[data-theme="dark"] .offcanvas .btn-close {
+    filter: invert(1) brightness(0.8);
+}
+
+.offcanvas-body .list-group-item {
+    background-color: transparent;
+    border-color: var(--border-light);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.offcanvas-body .list-group-item:hover {
+    background-color: var(--bg-light);
+    color: var(--primary-color);
+    padding-left: 1.5rem;
+}

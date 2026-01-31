@@ -91,6 +91,14 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
         color: var(--text-primary);
     }
 
+    .navbar-menu .nav-link.active {
+        background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        color: var(--primary-color);
+        font-weight: 600;
+        border-left: 4px solid var(--primary-color);
+        padding-left: calc(1rem - 4px);
+    }
+
     .navbar-right {
         display: none;
         width: 100%;

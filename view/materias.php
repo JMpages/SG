@@ -42,7 +42,7 @@ if(!isset($_SESSION['usuario'])){
                 <div class="col-12 col-md-6 mt-3 mt-md-0">
                     <div class="d-flex justify-content-end gap-2">
                         <!-- Toggle de Vistas -->
-                        <div class="btn-group me-2" role="group" aria-label="Cambiar vista">
+                        <div class="btn-group me-2 d-none d-md-inline-flex" role="group" aria-label="Cambiar vista">
                             <button type="button" class="btn btn-outline-light btn-sm active" id="btnViewGrid" title="Vista Cuadrícula"><i class="fas fa-th-large"></i></button>
                             <button type="button" class="btn btn-outline-light btn-sm" id="btnViewList" title="Vista Lista"><i class="fas fa-list"></i></button>
                         </div>
