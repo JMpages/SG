@@ -36,14 +36,20 @@ if (!isset($_SESSION['usuario_id'])) {
                     <h1><i class="fas fa-tasks me-2"></i>Mis Tareas</h1>
                     <p class="mb-0 opacity-75">Organiza tus entregas y pendientes académicos</p>
                 </div>
-                <button class="btn btn-agregar" data-bs-toggle="modal" data-bs-target="#modalTarea">
-                    <i class="fas fa-plus me-2"></i>Nueva Tarea
-                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="btn-group" role="group" aria-label="Vista">
+                        <button type="button" class="btn btn-outline-light active" id="btnVistaLista" title="Vista de Lista"><i class="fas fa-list"></i></button>
+                        <button type="button" class="btn btn-outline-light" id="btnVistaCalendario" title="Vista de Calendario"><i class="fas fa-calendar-alt"></i></button>
+                    </div>
+                    <button class="btn btn-agregar" data-bs-toggle="modal" data-bs-target="#modalTarea">
+                        <i class="fas fa-plus me-2"></i>Nueva Tarea
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Filtros -->
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-4" id="filtros-container">
             <div class="col-6 col-md-4">
                 <label for="filtroMateria" class="form-label small fw-bold">Materia</label>
                 <select class="form-select" id="filtroMateria">
@@ -67,6 +73,32 @@ if (!isset($_SESSION['usuario_id'])) {
             <div class="col-12 text-center py-5">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista Calendario -->
+        <div id="calendar-view" class="d-none">
+            <div class="calendar-controls d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-3">
+                    <h3 id="calendar-month-year" class="m-0 fw-bold h4"></h3>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary active" id="btnCalMes">Mes</button>
+                        <button type="button" class="btn btn-outline-secondary" id="btnCalSemana">Semana</button>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary btn-sm" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn btn-outline-secondary btn-sm" id="todayBtn">Hoy</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Días generados por JS -->
                 </div>
             </div>
         </div>
@@ -131,6 +163,29 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Sí, eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalle Día -->
+    <div class="modal fade" id="modalDetalleDia" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold" id="modalDetalleDiaTitle">Fecha</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="detalleDiaLista" class="list-group list-group-flush">
+                        <!-- Items generados por JS -->
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnAgregarTareaDia">
+                        <i class="fas fa-plus me-1"></i>Agregar Tarea
+                    </button>
                 </div>
             </div>
         </div>
