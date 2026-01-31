@@ -181,8 +181,7 @@ if (!isset($_SESSION['usuario_id'])) {
                         <!-- Items generados por JS -->
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-primary" id="btnAgregarTareaDia">
                         <i class="fas fa-plus me-1"></i>Agregar Tarea
                     </button>

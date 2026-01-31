@@ -398,6 +398,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         changeMonth(delta) {
             if (this.state.calendarMode === 'month') {
+                // Fix: Establecer día a 1 para evitar saltos de mes (ej: 30 Ene -> Feb -> Mar)
+                this.state.currentDate.setDate(1);
                 this.state.currentDate.setMonth(this.state.currentDate.getMonth() + delta);
             } else {
                 this.state.currentDate.setDate(this.state.currentDate.getDate() + (delta * 7));
@@ -408,6 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCalendar() {
             const grid = this.elements.calendarGrid;
             const monthYear = this.elements.calendarMonthYear;
+            const container = this.elements.calendarView.querySelector('.calendar-container');
             
             if(!grid || !monthYear) return;
 
@@ -416,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentDate = this.state.currentDate;
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
+            const dayNamesShort = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
             
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                 "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -424,6 +428,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let startDate, endDate;
 
             if (this.state.calendarMode === 'month') {
+                if(container) {
+                    container.classList.remove('mode-week');
+                    container.classList.add('mode-month');
+                }
                 grid.classList.remove('week-view');
                 monthYear.textContent = `${monthNames[month]} ${year}`;
                 
@@ -439,6 +447,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + 41);
             } else {
+                if(container) {
+                    container.classList.remove('mode-month');
+                    container.classList.add('mode-week');
+                }
                 grid.classList.add('week-view');
                 // Modo Semana
                 const dayOfWeek = currentDate.getDay();
@@ -528,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = '';
             
             if (tasks.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted py-4"><i class="far fa-calendar-check fa-2x mb-2 opacity-50"></i><p class="m-0 small">No hay tareas para este día.</p></div>';
+                container.innerHTML = '<div class="text-center empty-day-message py-4"><i class="far fa-calendar-check fa-2x mb-2"></i><p class="m-0 small">No hay tareas para este día.</p></div>';
             } else {
                 tasks.forEach(task => {
                     const isCompletada = task.completada == 1;
