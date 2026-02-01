@@ -96,11 +96,43 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$nombre, $password_hash]);
     
+    $usuario_id = $pdo->lastInsertId();
+
     // Si el registro fue exitoso, establecer sesión y redirigir
     $_SESSION['usuario'] = $nombre;
-    $_SESSION['usuario_id'] = $pdo->lastInsertId();
+    $_SESSION['usuario_id'] = $usuario_id;
     $_SESSION['mensaje_exito'] = "¡Registro exitoso! Bienvenido " . htmlspecialchars($nombre);
     
+    // Guardar log de registro en la tabla registro_logs
+    try {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'Desconocida';
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        
+        // Detectar navegador
+        $navegador = 'Otro';
+        if (strpos($ua, 'Edg') !== false) $navegador = 'Microsoft Edge';
+        elseif (strpos($ua, 'Chrome') !== false) $navegador = 'Google Chrome';
+        elseif (strpos($ua, 'Firefox') !== false) $navegador = 'Mozilla Firefox';
+        elseif (strpos($ua, 'Safari') !== false) $navegador = 'Safari';
+        elseif (strpos($ua, 'OPR') !== false || strpos($ua, 'Opera') !== false) $navegador = 'Opera';
+        
+        // Detectar sistema operativo
+        $so = 'Otro';
+        if (preg_match('/windows/i', $ua)) $so = 'Windows';
+        elseif (preg_match('/macintosh|mac os x/i', $ua)) $so = 'Mac OS';
+        elseif (preg_match('/linux/i', $ua)) $so = 'Linux';
+        elseif (preg_match('/android/i', $ua)) $so = 'Android';
+        elseif (preg_match('/iphone|ipad/i', $ua)) $so = 'iOS';
+        
+        $dispositivo = preg_match('/mobile|tablet|android|iphone|ipad/i', $ua) ? 'Móvil/Tablet' : 'Escritorio';
+        
+        $sqlLog = "INSERT INTO registro_logs (usuario_id, username, ip, navegador, sistema_operativo, dispositivo) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmtLog = $pdo->prepare($sqlLog);
+        $stmtLog->execute([$usuario_id, $nombre, $ip, $navegador, $so, $dispositivo]);
+    } catch (Exception $e) {
+        // Continuar aunque falle el log para no interrumpir el registro del usuario
+    }
+
     header("Location: ../view/dashboard.php");
     exit();
     

@@ -131,14 +131,14 @@ if(!isset($_SESSION['usuario'])){
                                 <div class="criterio-row">
                                     <div class="row g-2">
                                         <div class="col-12 col-md-6">
-                                            <input type="text" class="form-control criterio-nombre" placeholder="Ej: Quiz" required>
+                                            <input type="text" class="form-control criterio-nombre" placeholder="Ej: Quiz">
                                         </div>
                                         <div class="col-6 col-md-3">
-                                            <input type="number" class="form-control criterio-cantidad" placeholder="Cantidad" min="1" value="1" required>
+                                            <input type="number" class="form-control criterio-cantidad" placeholder="Cantidad" min="1" value="1">
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="input-group">
-                                                <input type="number" class="form-control criterio-porcentaje" placeholder="%" min="0" max="100" step="0.1" required>
+                                                <input type="number" class="form-control criterio-porcentaje" placeholder="%" min="0" max="100" step="0.1">
                                                 <span class="input-group-text">%</span>
                                             </div>
                                         </div>
@@ -225,14 +225,14 @@ if(!isset($_SESSION['usuario'])){
             newCriterio.innerHTML = `
                 <div class="row g-2">
                     <div class="col-12 col-md-6">
-                        <input type="text" class="form-control criterio-nombre" placeholder="Ej: Quiz" required value="${criterio ? escapeHtml(criterio.nombre) : ''}">
+                        <input type="text" class="form-control criterio-nombre" placeholder="Ej: Quiz" value="${criterio ? escapeHtml(criterio.nombre) : ''}">
                     </div>
                     <div class="col-6 col-md-3">
-                        <input type="number" class="form-control criterio-cantidad" placeholder="Cantidad" min="1" value="${criterio ? criterio.cantidad_evaluaciones : '1'}" required>
+                        <input type="number" class="form-control criterio-cantidad" placeholder="Cantidad" min="1" value="${criterio ? criterio.cantidad_evaluaciones : '1'}">
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="input-group">
-                            <input type="number" class="form-control criterio-porcentaje" placeholder="%" min="0" max="100" step="0.1" required value="${criterio ? parseFloat(criterio.porcentaje) : ''}">
+                            <input type="number" class="form-control criterio-porcentaje" placeholder="%" min="0" max="100" step="0.1" value="${criterio ? parseFloat(criterio.porcentaje) : ''}">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
@@ -308,6 +308,11 @@ if(!isset($_SESSION['usuario'])){
                 const cantidad = row.querySelector('.criterio-cantidad').value;
                 const porcentaje = row.querySelector('.criterio-porcentaje').value;
                 
+                // Ignorar fila si está vacía (considerando que cantidad tiene valor por defecto 1)
+                if (!nombre && !porcentaje && cantidad === '1') {
+                    return;
+                }
+
                 if (nombre || cantidad || porcentaje) {
                     if (!nombre || !cantidad || !porcentaje) {
                         formCriteriosValido = false;

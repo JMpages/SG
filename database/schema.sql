@@ -1,6 +1,3 @@
--- =========================================
--- BASE DE DATOS: sistema_notas
--- =========================================
 CREATE DATABASE IF NOT EXISTS sistema_notas
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
@@ -14,9 +11,29 @@ CREATE TABLE usuarios (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL,
   password VARCHAR(255) NOT NULL,
-  fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_username (username),
   KEY idx_username (username)
+) ENGINE=InnoDB;
+
+-- =========================================
+-- TABLA: registro_logs (CREACIÓN DE CUENTAS)
+-- =========================================
+CREATE TABLE registro_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  username VARCHAR(50) NOT NULL,
+  ip VARCHAR(45) NOT NULL,
+  navegador VARCHAR(100) DEFAULT NULL,
+  sistema_operativo VARCHAR(100) DEFAULT NULL,
+  dispositivo VARCHAR(50) DEFAULT NULL,
+  ubicacion VARCHAR(150) DEFAULT NULL,
+  fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_usuario (usuario_id),
+  KEY idx_fecha (fecha),
+  CONSTRAINT fk_registro_usuario
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- =========================================
@@ -42,8 +59,8 @@ CREATE TABLE materias (
 CREATE TABLE criterios_evaluacion (
   id INT AUTO_INCREMENT PRIMARY KEY,
   materia_id INT NOT NULL,
-  nombre VARCHAR(50) NOT NULL COMMENT 'Ej: Parciales, Quices, Tareas',
-  porcentaje DECIMAL(5,2) NOT NULL COMMENT 'Porcentaje del criterio (0-100)',
+  nombre VARCHAR(50) NOT NULL,
+  porcentaje DECIMAL(5,2) NOT NULL,
   cantidad_evaluaciones INT NOT NULL DEFAULT 1,
   fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY idx_materia (materia_id),
@@ -59,9 +76,9 @@ CREATE TABLE criterios_evaluacion (
 CREATE TABLE notas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   criterio_id INT NOT NULL,
-  numero_evaluacion INT NOT NULL COMMENT '1, 2, 3...',
-  calificacion DECIMAL(5,2) DEFAULT NULL COMMENT 'NULL = pendiente',
-  es_simulacion TINYINT(1) DEFAULT 0 COMMENT '0 = real, 1 = simulación',
+  numero_evaluacion INT NOT NULL,
+  calificacion DECIMAL(5,2) DEFAULT NULL,
+  es_simulacion TINYINT(1) DEFAULT 0,
   fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   fecha_actualizacion TIMESTAMP NOT NULL
     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

@@ -56,16 +56,16 @@ if(isset($_SESSION['usuario'])){
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <label for="nombre" class="form-label">Nombre de usuario</label>
-                                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="" required>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre de usuario" required>
                                     </div>
                                     <div class="col-12 mb-3">
                                         <label for="password" class="form-label">Contraseña</label>
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="" required>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Tú contraseña" required>
                                         
                                     </div>
                                     <div class="col-12 mb-3">
                                         <label for="password_confirm" class="form-label">Confirmar Contraseña</label>
-                                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="" required>
+                                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Confirmación de contraseña" required>
                                     </div>
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-primary w-100">Registrarse</button>
