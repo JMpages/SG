@@ -31,6 +31,45 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
     gap: 1rem;
 }
 
+/* Botones de autenticación personalizados */
+.btn-auth {
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-login {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-login:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.btn-register {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+}
+
+.btn-register:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    color: white;
+}
+
 @media (max-width: 768px) {
     .navbar-container {
         position: relative;
@@ -304,8 +343,8 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
                     </div>
                 <?php else: ?>
                     <div class="d-flex gap-2 w-100 justify-content-center">
-                        <a href="<?php echo $ruta_vistas; ?>login.php" class="btn btn-outline-primary btn-sm">Iniciar Sesión</a>
-                        <a href="<?php echo $ruta_vistas; ?>registro.php" class="btn btn-primary btn-sm">Registrarse</a>
+                        <a href="<?php echo $ruta_vistas; ?>login.php" class="btn-auth btn-login">Iniciar Sesión</a>
+                        <a href="<?php echo $ruta_vistas; ?>registro.php" class="btn-auth btn-register">Registrarse</a>
                     </div>
                 <?php endif; ?>
             </div>
