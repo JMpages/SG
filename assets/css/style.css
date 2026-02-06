@@ -10,7 +10,7 @@
     --bg-light: #fffdf4;
     --bg-body: #fffaf0;
     --secondary-color: #ffffff;
-    --input-bg: #f1f3f5;
+    --input-bg: #ffffff;
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 10px 25px rgba(118, 75, 162, 0.15);
 }
@@ -21,14 +21,28 @@
         --text-primary: #e6eef9;
         --text-secondary: #95a9bb;
         --text-muted: #8899a8;
-        --border-color: #404040;
+        --border-color: #4a5568;
         --bg-light: #07182b;
         --bg-body: #061226;
         --secondary-color: #082a3a;
-        --input-bg: #0b2236;
+        --input-bg: #162a40;
         --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
         --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
+}
+
+/* Tema oscuro forzado por atributo */
+[data-theme="dark"] {
+    --text-primary: #e6eef9;
+    --text-secondary: #95a9bb;
+    --text-muted: #8899a8;
+    --border-color: #4a5568;
+    --bg-light: #07182b;
+    --bg-body: #061226;
+    --secondary-color: #082a3a;
+    --input-bg: #162a40;
+    --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 /* ===== ESTILOS GENERALES ===== */
@@ -75,32 +89,32 @@ a:hover {
 /* Estilo consistente con tareas.css */
 .form-control, .form-select {
     background-color: var(--input-bg);
-    border: 1px solid transparent;
-    border-bottom: 2px solid var(--border-color);
-    border-radius: 0.5rem 0.5rem 0 0;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
     color: var(--text-primary);
     padding: 0.75rem 1rem;
     transition: all 0.3s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .form-control:focus, .form-select:focus {
     background-color: var(--input-bg);
-    border-color: transparent;
-    border-bottom-color: var(--primary-color);
-    box-shadow: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
     color: var(--text-primary);
 }
 
 .form-control::placeholder {
     color: var(--text-muted);
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 .form-label {
     color: var(--text-primary);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    letter-spacing: 0.3px;
 }
 
 /* ===== BOTONES ===== */
