@@ -23,12 +23,30 @@ try {
     $fecha_entrega = $input['fecha_entrega'];
     $descripcion = isset($input['descripcion']) ? trim($input['descripcion']) : null;
     $id = isset($input['id']) && !empty($input['id']) ? (int)$input['id'] : null;
+    
+    // Nuevos campos para vinculación con notas
+    $es_calificada = !empty($input['es_calificada']) ? 1 : 0;
+    $criterio_id = !empty($input['criterio_id']) ? (int)$input['criterio_id'] : null;
+    $numero_evaluacion = !empty($input['numero_evaluacion']) ? (int)$input['numero_evaluacion'] : null;
 
     // Verificar que la materia pertenezca al usuario
     $stmtCheck = $pdo->prepare("SELECT id FROM materias WHERE id = ? AND usuario_id = ?");
     $stmtCheck->execute([$materia_id, $usuario_id]);
     if ($stmtCheck->rowCount() === 0) {
         throw new Exception('Materia no válida o no autorizada');
+    }
+
+    // Validación adicional: Si es calificada, verificar que el criterio pertenezca a la materia
+    if ($es_calificada && $criterio_id) {
+        $stmtCrit = $pdo->prepare("SELECT id FROM criterios_evaluacion WHERE id = ? AND materia_id = ?");
+        $stmtCrit->execute([$criterio_id, $materia_id]);
+        if ($stmtCrit->rowCount() === 0) {
+            throw new Exception("El criterio seleccionado no es válido para esta materia.");
+        }
+    } else {
+        // Limpiar datos si no es calificada para evitar inconsistencias
+        $criterio_id = null;
+        $numero_evaluacion = null;
     }
 
     if ($id) {
@@ -38,15 +56,15 @@ try {
         $checkTarea->execute([$id, $usuario_id]);
         if ($checkTarea->rowCount() === 0) throw new Exception('Tarea no encontrada o no autorizada');
 
-        $sql = "UPDATE tareas SET titulo = ?, materia_id = ?, fecha_entrega = ?, descripcion = ? WHERE id = ?";
+        $sql = "UPDATE tareas SET titulo = ?, materia_id = ?, fecha_entrega = ?, descripcion = ?, es_calificada = ?, criterio_id = ?, numero_evaluacion = ? WHERE id = ?";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$titulo, $materia_id, $fecha_entrega, $descripcion, $id]);
+        $stmt->execute([$titulo, $materia_id, $fecha_entrega, $descripcion, $es_calificada, $criterio_id, $numero_evaluacion, $id]);
         $msg = 'Tarea actualizada correctamente';
     } else {
         // Crear nueva tarea
-        $sql = "INSERT INTO tareas (materia_id, titulo, fecha_entrega, descripcion) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO tareas (materia_id, titulo, fecha_entrega, descripcion, es_calificada, criterio_id, numero_evaluacion) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$materia_id, $titulo, $fecha_entrega, $descripcion]);
+        $stmt->execute([$materia_id, $titulo, $fecha_entrega, $descripcion, $es_calificada, $criterio_id, $numero_evaluacion]);
         $msg = 'Tarea creada correctamente';
     }
 

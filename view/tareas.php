@@ -129,6 +129,27 @@ if (!isset($_SESSION['usuario_id'])) {
                             </select>
                         </div>
                         <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="checkVincular">
+                                <label class="form-check-label fw-bold" for="checkVincular">¿Es una actividad con nota?</label>
+                                <div class="form-text text-muted small mt-0" style="line-height: 1.3;">Actívalo para asociar esta tarea a una evaluación (ej. Examen 1) en tu registro.</div>
+                            </div>
+                            <div id="panelVinculacion" class="mt-2 p-3 border rounded d-none" style="background-color: var(--bg-light); border-color: var(--border-color) !important;">
+                                <div class="mb-2">
+                                    <label for="tareaCriterio" class="form-label small text-muted">Tipo de Evaluación</label>
+                                    <select class="form-select" id="tareaCriterio">
+                                        <option value="">Primero selecciona materia...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="tareaEvaluacionNumero" class="form-label small text-muted">Número de Evaluación</label>
+                                    <select class="form-select" id="tareaEvaluacionNumero">
+                                        <option value="">-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
                             <label for="tareaFecha" class="form-label">Fecha de Entrega <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="tareaFecha" name="fecha_entrega" required>
                         </div>
@@ -207,5 +228,199 @@ if (!isset($_SESSION['usuario_id'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JS Personalizado -->
     <script src="../assets/js/tareas.js"></script>
+
+    <!-- Script para manejo de vinculación de tareas (Mejora UX) -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectMateria = document.getElementById('tareaMateria');
+        const checkVincular = document.getElementById('checkVincular');
+        const panelVinculacion = document.getElementById('panelVinculacion');
+        const selectCriterio = document.getElementById('tareaCriterio');
+        const selectNumero = document.getElementById('tareaEvaluacionNumero');
+        const btnGuardar = document.getElementById('btnGuardarTarea');
+        const modalTarea = document.getElementById('modalTarea');
+
+        let criteriosCache = [];
+
+        // Función auxiliar para cargar criterios
+        async function cargarCriterios(materiaId) {
+            selectCriterio.innerHTML = '<option value="">Cargando...</option>';
+            selectNumero.innerHTML = '<option value="">-</option>';
+            criteriosCache = [];
+            
+            if(!materiaId) {
+                selectCriterio.innerHTML = '<option value="">Primero selecciona materia...</option>';
+                return false;
+            }
+
+            try {
+                const response = await fetch(`../backend/obtener_detalle_materia.php?id=${materiaId}`);
+                const result = await response.json();
+                
+                if(result.status === 'success' && result.data.criterios) {
+                    criteriosCache = result.data.criterios;
+                    let options = '<option value="">Selecciona tipo...</option>';
+                    criteriosCache.forEach(c => {
+                        options += `<option value="${c.id}">${c.nombre}</option>`;
+                    });
+                    selectCriterio.innerHTML = options;
+                    return true;
+                } else {
+                    selectCriterio.innerHTML = '<option value="">Sin criterios definidos</option>';
+                }
+            } catch(e) {
+                console.error("Error cargando criterios:", e);
+                selectCriterio.innerHTML = '<option value="">Error al cargar</option>';
+            }
+            return false;
+        }
+
+        // 1. Eventos de Interfaz
+        checkVincular.addEventListener('change', function() {
+            if(this.checked) {
+                panelVinculacion.classList.remove('d-none');
+                // Si hay materia pero no criterios, cargar
+                if(selectMateria.value && selectCriterio.options.length <= 1) {
+                    cargarCriterios(selectMateria.value);
+                }
+            } else {
+                panelVinculacion.classList.add('d-none');
+            }
+        });
+
+        selectMateria.addEventListener('change', function() {
+            if(checkVincular.checked) {
+                cargarCriterios(this.value);
+            } else {
+                // Limpiar cache si cambia materia aunque esté oculto
+                selectCriterio.innerHTML = '<option value="">Primero selecciona materia...</option>';
+                criteriosCache = [];
+            }
+        });
+
+        selectCriterio.addEventListener('change', function() {
+            const criterioId = this.value;
+            selectNumero.innerHTML = '<option value="">-</option>';
+            
+            const criterio = criteriosCache.find(c => c.id == criterioId);
+            if(criterio) {
+                let options = '';
+                for(let i=1; i <= criterio.cantidad_evaluaciones; i++) {
+                    options += `<option value="${i}">#${i}</option>`;
+                }
+                selectNumero.innerHTML = options;
+            }
+        });
+
+        // 2. Manejo de Edición (Poblar datos al abrir modal)
+        modalTarea.addEventListener('shown.bs.modal', async function() {
+            const tareaId = document.getElementById('tareaId').value;
+            
+            // UX: Mejoras de velocidad (Foco, Fecha Hoy, Pre-selección Materia)
+            document.getElementById('tareaTitulo').focus();
+            if(!document.getElementById('tareaFecha').value) {
+                document.getElementById('tareaFecha').value = new Date().toISOString().split('T')[0];
+            }
+            // Si ya estás filtrando por una materia, la seleccionamos automáticamente
+            if(!tareaId && window.app && window.app.state.filtroMateria) {
+                document.getElementById('tareaMateria').value = window.app.state.filtroMateria;
+            }
+
+            // Si es edición (tareaId tiene valor) y tenemos acceso a la app global
+            if(tareaId && window.app) {
+                const tarea = window.app.state.tareas.find(t => t.id == tareaId) || window.app.state.calendarTasks.find(t => t.id == tareaId);
+                
+                if(tarea && tarea.es_calificada == 1) {
+                    checkVincular.checked = true;
+                    panelVinculacion.classList.remove('d-none');
+                    
+                    // Cargar criterios y esperar
+                    await cargarCriterios(tarea.materia_id);
+                    
+                    // Establecer valores
+                    selectCriterio.value = tarea.criterio_id;
+                    // Disparar evento change manualmente para llenar números
+                    selectCriterio.dispatchEvent(new Event('change'));
+                    selectNumero.value = tarea.numero_evaluacion;
+                } else {
+                    checkVincular.checked = false;
+                    panelVinculacion.classList.add('d-none');
+                }
+            } else {
+                // Modo crear: resetear visualmente
+                checkVincular.checked = false;
+                panelVinculacion.classList.add('d-none');
+            }
+        });
+
+        // 2. Sobrescribir el guardado para incluir la vinculación
+        // Clonamos el botón para eliminar listeners anteriores de tareas.js y usar este nuevo logic
+        const newBtnGuardar = btnGuardar.cloneNode(true);
+        btnGuardar.parentNode.replaceChild(newBtnGuardar, btnGuardar);
+
+        newBtnGuardar.addEventListener('click', async function() {
+            const form = document.getElementById('formTarea');
+            const titulo = document.getElementById('tareaTitulo').value;
+            const materiaId = document.getElementById('tareaMateria').value;
+            const fecha = document.getElementById('tareaFecha').value;
+            const descripcion = document.getElementById('tareaDescripcion').value;
+            const id = document.getElementById('tareaId').value;
+
+            if(!titulo || !materiaId || !fecha) {
+                // Usamos el toast existente si es posible, o alert simple
+                alert('Por favor completa los campos obligatorios (Título, Materia, Fecha)');
+                return;
+            }
+
+            // Preparar datos para el backend
+            let es_calificada = 0;
+            let criterio_id = null;
+            let numero_evaluacion = null;
+
+            if(checkVincular.checked) {
+                const critVal = selectCriterio.value;
+                const numVal = selectNumero.value;
+                
+                if(!critVal || !numVal) {
+                    alert('Si activas la vinculación, debes seleccionar el Tipo y el Número de evaluación.');
+                    return;
+                }
+                es_calificada = 1;
+                criterio_id = critVal;
+                numero_evaluacion = numVal;
+            }
+
+            const data = {
+                id: id || null,
+                titulo: titulo,
+                materia_id: materiaId,
+                fecha_entrega: fecha,
+                descripcion: descripcion,
+                es_calificada: es_calificada,
+                criterio_id: criterio_id,
+                numero_evaluacion: numero_evaluacion
+            };
+
+            try {
+                const response = await fetch('../backend/tareas_proceso.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    // Recargar página o actualizar lista (asumimos recarga para simplificar integración)
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch(error) {
+                console.error(error);
+                alert('Error de conexión al guardar la tarea');
+            }
+        });
+    });
+    </script>
 </body>
 </html>

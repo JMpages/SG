@@ -304,7 +304,7 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
                 
                 <?php if(isset($_SESSION['usuario'])): ?>
                     <li><a href="<?php echo $ruta_vistas; ?>dashboard.php" class="nav-link <?php echo $pagina_actual == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a></li>
-                    <li><a href="<?php echo $ruta_vistas; ?>materias.php" class="nav-link <?php echo $pagina_actual == 'materias.php' ? 'active' : ''; ?>">Materias</a></li>
+                    <li><a href="<?php echo $ruta_vistas; ?>materias.php" class="nav-link <?php echo ($pagina_actual == 'materias.php' || $pagina_actual == 'materia_detalle.php') ? 'active' : ''; ?>">Materias</a></li>
                     <li><a href="<?php echo $ruta_vistas; ?>tareas.php" class="nav-link <?php echo $pagina_actual == 'tareas.php' ? 'active' : ''; ?>">Tareas</a></li>
                     <li><a href="<?php echo $ruta_vistas; ?>anotaciones.php" class="nav-link <?php echo $pagina_actual == 'anotaciones.php' ? 'active' : ''; ?>">Anotaciones</a></li>
                 <?php endif; ?>

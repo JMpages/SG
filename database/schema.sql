@@ -100,11 +100,19 @@ CREATE TABLE tareas (
   descripcion TEXT DEFAULT NULL,
   fecha_entrega DATE NOT NULL,
   completada TINYINT(1) DEFAULT 0,
+  es_calificada TINYINT(1) DEFAULT 0,
+  criterio_id INT DEFAULT NULL,
+  numero_evaluacion INT DEFAULT NULL,
   fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY idx_materia (materia_id),
   KEY idx_fecha_entrega (fecha_entrega),
+  KEY idx_criterio (criterio_id),
   CONSTRAINT fk_tareas_materia
     FOREIGN KEY (materia_id)
     REFERENCES materias(id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_tareas_criterio
+    FOREIGN KEY (criterio_id)
+    REFERENCES criterios_evaluacion(id)
+    ON DELETE SET NULL
 ) ENGINE=InnoDB;

@@ -187,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.listaTareas.innerHTML = this.state.tareas.map(tarea => {
                 const isVencida = !tarea.completada && new Date(tarea.fecha_entrega) < new Date().setHours(0,0,0,0);
                 const isCompletada = tarea.completada == 1;
+                const isCalificada = tarea.es_calificada == 1;
                 
                 let cardClass = 'tarea-card';
                 if (isCompletada) cardClass += ' completada';
@@ -196,8 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="col-md-6 col-lg-4">
                     <div class="${cardClass}">
                         <div class="tarea-header">
-                            <span class="tarea-materia">${this.escapeHtml(tarea.materia_nombre)}</span>
-                            <div class="form-check form-switch">
+                            <div class="d-flex align-items-center overflow-hidden">
+                                <span class="tarea-materia text-truncate">${this.escapeHtml(tarea.materia_nombre)}</span>
+                                ${isCalificada ? '<span class="badge bg-warning text-dark ms-2 flex-shrink-0" title="Evaluación vinculada"><i class="fas fa-star fa-xs"></i></span>' : ''}
+                            </div>
+                            <div class="form-check form-switch ms-2">
                                 <input class="form-check-input" type="checkbox" 
                                        onchange="app.toggleCompletada(${tarea.id}, this.checked)" 
                                        ${isCompletada ? 'checked' : ''} 
@@ -214,6 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         
                         <div class="tarea-footer">
+                            ${isCalificada ? `
+                            <a href="materia_detalle.php?id=${tarea.materia_id}&criterio=${tarea.criterio_id}&num=${tarea.numero_evaluacion}" class="btn btn-sm btn-success text-white" title="Ir a agregar calificación">
+                                <i class="fas fa-plus-circle"></i><span class="d-none d-sm-inline ms-1">Agregar Nota</span>
+                            </a>` : ''}
                             <button class="btn btn-sm btn-outline-primary" onclick="app.editTarea(${tarea.id})">
                                 <i class="fas fa-edit"></i><span class="d-none d-sm-inline ms-1">Editar</span>
                             </button>
@@ -553,10 +561,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                    ${isCompletada ? 'checked' : ''}>
                         </div>
                         <div class="dia-tarea-info">
-                            <div class="dia-tarea-titulo">${this.escapeHtml(task.titulo)}</div>
+                            <div class="dia-tarea-titulo">
+                                ${this.escapeHtml(task.titulo)}
+                                ${task.es_calificada == 1 ? '<i class="fas fa-star text-warning ms-1" style="font-size: 0.7em;" title="Evaluación"></i>' : ''}
+                            </div>
                             <div class="dia-tarea-materia">${this.escapeHtml(task.materia_nombre)}</div>
                         </div>
                         <div class="dia-tarea-actions">
+                            ${task.es_calificada == 1 ? `
+                            <a href="materia_detalle.php?id=${task.materia_id}&criterio=${task.criterio_id}&num=${task.numero_evaluacion}" class="btn btn-sm btn-success text-white p-1 px-2" style="text-decoration:none;" title="Agregar Nota"><i class="fas fa-plus-circle"></i></a>
+                            ` : ''}
                             <button class="btn btn-sm btn-link text-primary p-1" onclick="app.editTarea(${task.id})"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-sm btn-link text-danger p-1" onclick="app.deleteTarea(${task.id})"><i class="fas fa-trash-alt"></i></button>
                         </div>

@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.state.isLoading = false;
                     this.render();
                     this.updateSummary();
+                    this.handleDeepLink(); // Verificar si hay que enfocar una nota específica
                 } else {
                     throw new Error(result.message || 'No se pudieron cargar los datos.');
                 }
@@ -66,6 +67,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.state.isLoading = false;
                 this.render();
                 showToast(error.message, 'error');
+            }
+        },
+
+        // Manejar enlace profundo a una nota específica
+        handleDeepLink() {
+            const params = new URLSearchParams(window.location.search);
+            const criterioId = params.get('criterio');
+            const num = params.get('num');
+            
+            if (criterioId && num) {
+                // Pequeño delay para asegurar renderizado
+                setTimeout(() => {
+                    const inputId = `nota-${criterioId}-${num}`;
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        input.focus();
+                        // Efecto visual de resaltado temporal
+                        input.classList.add('bg-warning', 'bg-opacity-25');
+                        setTimeout(() => input.classList.remove('bg-warning', 'bg-opacity-25'), 2000);
+                    }
+                }, 500);
             }
         },
 
