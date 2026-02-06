@@ -472,6 +472,7 @@ body {
     border-radius: 0.5rem;
     margin-bottom: 0.75rem;
     border: 1px solid var(--border-color);
+    transition: background-color 0.2s;
 }
 
 .criterio-row input,
@@ -487,16 +488,23 @@ body {
 
 /* Botones en modal */
 .btn-remove-criterio {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.85rem;
-    border-color: #dc3545;
-    color: #dc3545;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    background: transparent;
+    transition: all 0.2s ease;
+    margin: 0 auto;
 }
 
 .btn-remove-criterio:hover {
-    background-color: #dc3545;
-    border-color: #dc3545;
-    color: white;
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    transform: scale(1.1);
 }
 
 .btn-add-criterio {
@@ -512,6 +520,22 @@ body {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
     color: white;
+}
+
+/* Botón sutil para agregar evaluación en detalle */
+.btn-add-evaluacion-subtle {
+    background-color: transparent;
+    border: 1px dashed var(--border-color);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.btn-add-evaluacion-subtle:hover {
+    background-color: var(--bg-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 /* ===== ALERTAS ===== */

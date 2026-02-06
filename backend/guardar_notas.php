@@ -45,6 +45,9 @@ try {
             ON DUPLICATE KEY UPDATE calificacion = VALUES(calificacion)";
     $stmt = $pdo->prepare($sql);
 
+    // Array para rastrear el número máximo de evaluación por criterio
+    $max_evaluaciones = [];
+
     foreach ($notas_a_guardar as $nota) {
         $criterio_id = filter_var($nota['criterio_id'], FILTER_VALIDATE_INT);
         $numero_evaluacion = filter_var($nota['numero_evaluacion'], FILTER_VALIDATE_INT);
@@ -70,6 +73,22 @@ try {
             ':calificacion' => $calificacion,
             ':es_simulacion' => $es_simulacion
         ]);
+
+        // Rastrear máximo número de evaluación
+        if (!isset($max_evaluaciones[$criterio_id])) {
+            $max_evaluaciones[$criterio_id] = 0;
+        }
+        if ($numero_evaluacion > $max_evaluaciones[$criterio_id]) {
+            $max_evaluaciones[$criterio_id] = $numero_evaluacion;
+        }
+    }
+
+    // Actualizar la estructura de criterios si es necesario (expandir cantidad)
+    $sqlUpdateStruct = "UPDATE criterios_evaluacion SET cantidad_evaluaciones = GREATEST(cantidad_evaluaciones, ?) WHERE id = ? AND materia_id IN (SELECT id FROM materias WHERE usuario_id = ?)";
+    $stmtUpdateStruct = $pdo->prepare($sqlUpdateStruct);
+    
+    foreach ($max_evaluaciones as $cid => $max) {
+        $stmtUpdateStruct->execute([$max, $cid, $usuario_id]);
     }
 
     $pdo->commit();

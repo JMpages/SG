@@ -123,32 +123,20 @@ if(!isset($_SESSION['usuario'])){
                         <!-- Criterios de Evaluación -->
                         <div class="criterios-dynamica">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="mb-0"><i class="fas fa-list-check"></i> Criterios de Evaluación</h6>
-                                <small class="text-muted">El total debe sumar 100%</small>
+                                <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-list-check me-2"></i>Criterios de Evaluación</h6>
+                                <span class="badge bg-light text-dark border" id="totalPorcentajeBadge">Total: 0%</span>
                             </div>
                             
+                            <!-- Cabecera de columnas (Visible en escritorio) -->
+                            <div class="row g-2 mb-2 px-2 d-none d-md-flex text-muted small fw-bold text-uppercase">
+                                <div class="col-5">Nombre del Criterio</div>
+                                <div class="col-3">Cant. Evaluaciones</div>
+                                <div class="col-3">Valor (%)</div>
+                                <div class="col-1 text-center"></div>
+                            </div>
+
                             <div id="criteriosContainer">
-                                <div class="criterio-row">
-                                    <div class="row g-2">
-                                        <div class="col-12 col-md-6">
-                                            <input type="text" class="form-control criterio-nombre" placeholder="Ej: Quiz">
-                                        </div>
-                                        <div class="col-6 col-md-3">
-                                            <input type="number" class="form-control criterio-cantidad" placeholder="Cantidad" min="1" value="1">
-                                        </div>
-                                        <div class="col-6 col-md-3">
-                                            <div class="input-group">
-                                                <input type="number" class="form-control criterio-porcentaje" placeholder="%" min="0" max="100" step="0.1">
-                                                <span class="input-group-text">%</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-criterio w-100" style="display: none;">
-                                                <i class="fas fa-trash"></i> Eliminar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- Se llena dinámicamente con JS -->
                             </div>
 
                             <button type="button" class="btn btn-sm btn-outline-primary btn-add-criterio" id="btnAgregarCriterio">
@@ -223,22 +211,25 @@ if(!isset($_SESSION['usuario'])){
             const newCriterio = document.createElement('div');
             newCriterio.className = 'criterio-row';
             newCriterio.innerHTML = `
-                <div class="row g-2">
-                    <div class="col-12 col-md-6">
-                        <input type="text" class="form-control criterio-nombre" placeholder="Ej: Quiz" value="${criterio ? escapeHtml(criterio.nombre) : ''}">
+                <div class="row g-2 align-items-center">
+                    <div class="col-12 col-md-5">
+                        <input type="text" class="form-control criterio-nombre" placeholder="Ej: Parciales" value="${criterio ? escapeHtml(criterio.nombre) : ''}">
                     </div>
-                    <div class="col-6 col-md-3">
-                        <input type="number" class="form-control criterio-cantidad" placeholder="Cantidad" min="1" value="${criterio ? criterio.cantidad_evaluaciones : '1'}">
-                    </div>
-                    <div class="col-6 col-md-3">
+                    <div class="col-5 col-md-3">
                         <div class="input-group">
-                            <input type="number" class="form-control criterio-porcentaje" placeholder="%" min="0" max="100" step="0.1" value="${criterio ? parseFloat(criterio.porcentaje) : ''}">
+                            <input type="number" class="form-control criterio-cantidad" placeholder="Cant." min="1" value="${criterio ? criterio.cantidad_evaluaciones : '1'}">
+                            <span class="input-group-text" title="Cantidad de evaluaciones">#</span>
+                        </div>
+                    </div>
+                    <div class="col-5 col-md-3">
+                        <div class="input-group">
+                            <input type="number" class="form-control criterio-porcentaje" placeholder="Valor" min="0" max="100" step="0.1" value="${criterio ? parseFloat(criterio.porcentaje) : ''}">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-criterio w-100">
-                            <i class="fas fa-trash"></i> Eliminar
+                    <div class="col-2 col-md-1 text-center">
+                        <button type="button" class="btn btn-remove-criterio btn-sm text-danger" title="Eliminar criterio">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </div>
@@ -251,9 +242,14 @@ if(!isset($_SESSION['usuario'])){
                 e.preventDefault();
                 newCriterio.remove();
                 actualizarVisibilidadBotonesEliminar();
+                actualizarTotalPorcentaje();
             });
             
+            // Evento para actualizar suma al cambiar porcentaje
+            newCriterio.querySelector('.criterio-porcentaje').addEventListener('input', actualizarTotalPorcentaje);
+
             actualizarVisibilidadBotonesEliminar();
+            actualizarTotalPorcentaje();
         }
 
         // Mostrar/ocultar botones de eliminar según cantidad de criterios
@@ -263,6 +259,26 @@ if(!isset($_SESSION['usuario'])){
                 const btnEliminar = criterio.querySelector('.btn-remove-criterio');
                 btnEliminar.style.display = criterios.length > 1 ? 'block' : 'none';
             });
+        }
+
+        // Calcular y mostrar total de porcentajes
+        function actualizarTotalPorcentaje() {
+            let total = 0;
+            document.querySelectorAll('.criterio-porcentaje').forEach(input => {
+                const val = parseFloat(input.value);
+                if (!isNaN(val)) total += val;
+            });
+            
+            const badge = document.getElementById('totalPorcentajeBadge');
+            badge.textContent = `Total: ${total.toFixed(1)}% / 100%`;
+            
+            if (Math.abs(total - 100) < 0.1) {
+                badge.className = 'badge bg-success text-white border';
+            } else if (total > 100) {
+                badge.className = 'badge bg-danger text-white border';
+            } else {
+                badge.className = 'badge bg-warning text-dark border';
+            }
         }
 
         // Función para mostrar Toast
@@ -588,7 +604,9 @@ if(!isset($_SESSION['usuario'])){
             const modalElement = document.getElementById('agregarMateriaModal');
             modalElement.addEventListener('hidden.bs.modal', function () {
                 document.getElementById('formMateria').reset();
-                document.querySelectorAll('.criterio-row:not(:first-child)').forEach(el => el.remove());
+                // Limpiar y restaurar estado inicial
+                document.getElementById('criteriosContainer').innerHTML = '';
+                agregarCriterio(); 
                 document.getElementById('materiaId').value = '';
                 document.getElementById('agregarMateriaLabel').innerHTML = '<i class="fas fa-plus-circle"></i> Agregar Nueva Materia';
                 document.getElementById('btnGuardarMateria').innerHTML = '<i class="fas fa-save"></i> Guardar Materia';
@@ -604,6 +622,9 @@ if(!isset($_SESSION['usuario'])){
                     e.preventDefault();
                 }
             });
+
+            // Inicializar con un criterio vacío al cargar la página
+            agregarCriterio();
         });
     </script>
 </body>

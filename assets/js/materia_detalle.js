@@ -140,10 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const valor = notaActual !== null ? parseFloat(notaActual).toFixed(2) : '';
 
                     return `
-                        <div class="evaluacion-row">
-                            <label for="nota-${key}" class="evaluacion-label">${escapeHtml(criterio.nombre)} #${evalNum}</label>
-                            <div class="evaluacion-input">
-                                <input type="number" class="form-control ${this.state.esModoSimulacion ? 'simulacion' : ''}" 
+                        <div class="evaluacion-row mb-2">
+                            <label for="nota-${key}" class="form-label small text-muted mb-1">${escapeHtml(criterio.nombre)} #${evalNum}</label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="number" class="form-control flex-grow-1 ${this.state.esModoSimulacion ? 'simulacion' : ''}" 
                                        id="nota-${key}" 
                                        data-criterio-id="${criterio.id}" 
                                        data-eval-num="${evalNum}"
