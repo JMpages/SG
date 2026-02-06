@@ -331,6 +331,13 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
                             <svg class="icon-svg ms-1" style="width: 16px; height: 16px;" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </button>
                         <div class="dropdown-menu" id="dropdown">
+                            <a href="<?php echo $ruta_vistas; ?>perfil.php" class="dropdown-item justify-content-center justify-content-md-start">
+                                <svg class="icon-svg" viewBox="0 0 24 24">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                Mi Perfil
+                            </a>
                             <a href="<?php echo $ruta_backend; ?>logout.php" class="dropdown-item justify-content-center justify-content-md-start">
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>

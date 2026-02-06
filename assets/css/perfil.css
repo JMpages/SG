@@ -1,0 +1,127 @@
+/* ===== PERFIL DE USUARIO ===== */
+
+/* Tarjetas principales */
+.perfil-card, .perfil-content-card {
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Forzar color de texto en modo oscuro para elementos internos */
+.perfil-content-card h1, .perfil-content-card h2, .perfil-content-card h3, .perfil-content-card h4, .perfil-content-card h5, .perfil-content-card h6 {
+    color: var(--text-primary);
+}
+
+/* Avatar Grande */
+.perfil-avatar-lg {
+    width: 120px;
+    height: 120px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    color: white;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 1.5rem;
+}
+
+/* Nav Pills (Pestañas) Personalizados */
+.nav-pills .nav-link {
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.nav-pills .nav-link i {
+    margin-right: 0.5rem;
+}
+
+.nav-pills .nav-link.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background: var(--bg-light);
+    color: var(--primary-color);
+}
+
+.border-bottom-custom {
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Corrección de textos muted en modo oscuro */
+.perfil-content-card .text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Ajustes específicos para inputs dentro del perfil */
+.perfil-content-card .form-control,
+.perfil-content-card .input-group-text {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.perfil-content-card .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+/* Zona de peligro */
+.danger-zone {
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+[data-theme="dark"] .danger-zone {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* ===== TIMELINE DE ACTIVIDAD ===== */
+.activity-list {
+    position: relative;
+    padding-left: 0;
+    list-style: none;
+}
+
+.activity-item {
+    position: relative;
+    padding-left: 2rem;
+    padding-bottom: 1.5rem;
+    border-left: 2px solid var(--border-light);
+}
+
+.activity-item:last-child {
+    border-left: 2px solid transparent;
+}
+
+.activity-icon {
+    position: absolute;
+    left: -0.6rem; /* Ajuste para centrar sobre la línea */
+    top: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: var(--bg-light);
+    border: 2px solid var(--primary-color);
+    z-index: 2;
+}
+
+.activity-content {
+    background: var(--bg-light);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-light);
+}
