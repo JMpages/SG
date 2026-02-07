@@ -54,7 +54,7 @@ if(!isset($_SESSION['usuario'])){
                             <!-- Se llenará con JS -->
                         </select>
                         <div class="vr flex-shrink-0"></div>
-                        <input type="date" class="form-control border-0 bg-transparent shadow-none" id="filterDate" style="width: auto; max-width: 130px; cursor: pointer;">
+                        <input type="date" class="form-control border-0 bg-transparent shadow-none" id="filterDate" style="width: auto; max-width: 160px; cursor: pointer;">
                         <button class="btn btn-filter-clear rounded-circle flex-shrink-0" id="btnClearFilters" title="Limpiar filtros"><i class="fas fa-broom"></i></button>
                     </div>
                 </div>
@@ -96,8 +96,14 @@ if(!isset($_SESSION['usuario'])){
                     
                     <!-- Barra Lateral de Herramientas (Izquierda en Escritorio, Abajo en Móvil) -->
                     <div id="tools-sidebar" class="d-flex flex-column">
+
+                        <div class="sidebar-card d-flex flex-column flex-grow-1 position-relative">
                         
-                        <div class="sidebar-card d-flex flex-column flex-grow-1">
+                        <!-- Botón Toggle Integrado (Solo Móvil) -->
+                        <button id="mobile-toolbar-toggle" class="btn btn-light d-md-none d-flex align-items-center justify-content-center" type="button">
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+
                         <!-- Panel de Acciones -->
                         <div class="p-3 d-flex flex-column gap-3" id="actions-panel">
                             <button type="button" class="btn btn-primary w-100 rounded-pill fw-bold py-2" id="btnAddNote">
@@ -108,26 +114,6 @@ if(!isset($_SESSION['usuario'])){
                                 <select class="form-select border flex-grow-1" id="noteMateria" style="cursor: pointer;">
                                     <option value="">Sin materia</option>
                                 </select>
-                                
-                                <div class="dropdown">
-                                    <button class="btn btn-light border rounded-circle p-2" data-bs-toggle="dropdown" title="Color de nota" id="btnColorPicker" style="width: 38px; height: 38px;">
-                                        <i class="fas fa-palette"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end p-2 shadow-sm" style="min-width: 220px;">
-                                        <div class="d-flex flex-wrap gap-2 justify-content-center" id="colorOptions">
-                                            <div class="color-option selected" data-color="white" style="background: #ffffff; border: 1px solid #ddd;"></div>
-                                            <div class="color-option" data-color="red" style="background: #f28b82;"></div>
-                                            <div class="color-option" data-color="orange" style="background: #fbbc04;"></div>
-                                            <div class="color-option" data-color="yellow" style="background: #fff475;"></div>
-                                            <div class="color-option" data-color="green" style="background: #ccff90;"></div>
-                                            <div class="color-option" data-color="teal" style="background: #a7ffeb;"></div>
-                                            <div class="color-option" data-color="blue" style="background: #cbf0f8;"></div>
-                                            <div class="color-option" data-color="darkblue" style="background: #aecbfa;"></div>
-                                            <div class="color-option" data-color="purple" style="background: #d7aefb;"></div>
-                                            <div class="color-option" data-color="pink" style="background: #fdcfe8;"></div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -139,7 +125,7 @@ if(!isset($_SESSION['usuario'])){
                     </div>
 
                     <!-- Contenedor Principal (Toolbar + Editor) -->
-                    <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
+                    <div class="d-flex flex-column flex-grow-1" style="min-width: 0; min-height: 0;">
 
                     <!-- Área de Scroll (Fondo Gris) -->
                     <div class="flex-grow-1 overflow-y-auto" id="editor-scroll-area">
@@ -161,5 +147,62 @@ if(!isset($_SESSION['usuario'])){
     
     <!-- JS Específico -->
     <script src="../assets/js/anotaciones.js"></script>
+
+    <!-- Script para Tooltips en la barra de herramientas -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Observador para detectar cuando Quill genera la barra de herramientas
+            const observer = new MutationObserver((mutations, obs) => {
+                const toolbar = document.querySelector('.ql-toolbar');
+                if (toolbar) {
+                    // Definición de tooltips para cada botón
+                    const tooltips = {
+                        '.ql-bold': 'Negrita',
+                        '.ql-italic': 'Cursiva',
+                        '.ql-underline': 'Subrayado',
+                        '.ql-strike': 'Tachado',
+                        '.ql-blockquote': 'Cita',
+                        '.ql-code-block': 'Bloque de código',
+                        '.ql-list[value="ordered"]': 'Lista numerada',
+                        '.ql-list[value="bullet"]': 'Lista con viñetas',
+                        '.ql-indent[value="-1"]': 'Disminuir sangría',
+                        '.ql-indent[value="+1"]': 'Aumentar sangría',
+                        '.ql-link': 'Insertar enlace',
+                        '.ql-image': 'Insertar imagen',
+                        '.ql-clean': 'Limpiar formato',
+                        '.ql-color': 'Color de texto',
+                        '.ql-background': 'Color de fondo',
+                        '.ql-align': 'Alineación',
+                        '.ql-header': 'Estilo de encabezado'
+                    };
+
+                    for (const [selector, title] of Object.entries(tooltips)) {
+                        toolbar.querySelectorAll(selector).forEach(el => {
+                            // Configuración avanzada del tooltip
+                            const tooltip = new bootstrap.Tooltip(el, {
+                                title: title,
+                                placement: 'bottom',
+                                trigger: 'hover' // IMPORTANTE: Solo hover, evita que se quede al hacer click (focus)
+                            });
+                            
+                            // 1. Ocultar al hacer click
+                            el.addEventListener('click', () => {
+                                tooltip.hide();
+                            });
+
+                            // 2. PREVENIR que aparezca si el menú desplegable está abierto (clase ql-expanded)
+                            el.addEventListener('show.bs.tooltip', function(e) {
+                                if (this.classList.contains('ql-expanded')) {
+                                    e.preventDefault(); // Cancela la aparición del tooltip
+                                }
+                            });
+                        });
+                    }
+                    obs.disconnect(); // Detener observación una vez aplicados
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
 </body>
 </html>

@@ -21,19 +21,27 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSearchAndFilter();
     // Cargar notas desde el backend
     cargarNotasBackend();
+    setupMobileToolbar(); // Inicializar lógica móvil
 
     function initQuill() {
+        // 1. Configurar Tamaños de Fuente Numéricos
+        var Size = Quill.import('attributors/style/size');
+        Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '32px'];
+        Quill.register(Size, true);
+
         quill = new Quill('#editor-container', {
             theme: 'snow',
             placeholder: '',
             modules: {
                 toolbar: [
-                    [{ 'header': [1, 2, 3, false] }], // Grupo 1: Estilos de Encabezado
-                    [{ 'font': [] }, { 'size': [] }], // Grupo 2: Fuente y Tamaño
-                    ['bold', 'italic', 'underline', 'strike', { 'color': [] }, { 'background': [] }], // Grupo 3: Formato de Texto
-                    [{ 'align': [] }, { 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }], // Grupo 4: Párrafo
-                    ['link', 'image', 'blockquote', 'code-block'], // Grupo 5: Insertar
-                    ['clean']
+                    // FILA 1: Esenciales (Visibles siempre en móvil)
+                    [{ 'size': Size.whitelist }, 'bold', 'italic', { 'color': [] }, { 'list': 'bullet' }],
+                    
+                    // FILAS SIGUIENTES (Visibles al desplegar)
+                    ['underline', { 'list': 'ordered' }, { 'align': [] }], // Alineación y otros
+                    [{ 'header': [1, 2, 3, false] }, { 'font': [] }], // Encabezado y Fuente
+                    ['strike', { 'background': [] }, { 'indent': '-1'}, { 'indent': '+1' }], // Extras formato
+                    ['link', 'image', 'blockquote', 'code-block', 'clean'] // Insertar y limpiar
                 ]
             }
         });
@@ -43,6 +51,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const stickyContainer = document.getElementById('toolbar-sticky-container');
         if (toolbar && stickyContainer) {
             stickyContainer.appendChild(toolbar);
+        }
+    }
+
+    // 1.2 Configuración Toolbar Móvil
+    function setupMobileToolbar() {
+        const toggleBtn = document.getElementById('mobile-toolbar-toggle');
+        const sidebar = document.getElementById('tools-sidebar');
+        
+        if(toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('expanded');
+                const icon = this.querySelector('i');
+                if (sidebar.classList.contains('expanded')) {
+                    icon.className = 'fas fa-chevron-down';
+                } else {
+                    icon.className = 'fas fa-chevron-up';
+                }
+            });
         }
     }
 
