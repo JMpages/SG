@@ -25,26 +25,141 @@ if(!isset($_SESSION['usuario'])){
     <!-- Estilos Personalizados -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/anotaciones.css">
+    <!-- Quill Editor CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        /* Ajustes rápidos para masonry layout si no carga el CSS externo inmediatamente */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
     <?php include '../components/navbar.php'; ?>
     
     <!-- Contenido Principal -->
-    <main class="container py-5">
-        <div class="row justify-content-center text-center mt-5">
-            <div class="col-md-8">
-                <div class="p-5 rounded-3 border shadow-sm" style="background-color: var(--secondary-color);">
-                    <i class="fas fa-tools fa-4x text-muted mb-4 opacity-50"></i>
-                    <h1 class="display-5 fw-bold text-muted">Próximamente</h1>
-                    <p class="lead text-muted mb-4">Esta sección de Anotaciones estará disponible en futuras actualizaciones.</p>
-                    <a href="dashboard.php" class="btn btn-primary btn-lg">Volver al Inicio</a>
+    <main class="container py-4 pb-5">
+        
+        <!-- Header Estilo Materias -->
+        <div class="anotaciones-header">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-6">
+                    <h1><i class="fas fa-sticky-note"></i> Mis Anotaciones</h1>
+                    <p>Gestiona tus notas y apuntes personales</p>
+                </div>
+                <div class="col-12 col-md-6 mt-3 mt-md-0 d-flex justify-content-md-end">
+                    <!-- Barra de Filtros -->
+                    <div class="d-flex align-items-center gap-1 filter-bar-custom p-2 rounded-pill shadow-sm" style="max-width: 100%;">
+                        <select class="form-select border-0 bg-transparent shadow-none text-truncate" id="filterMateria" style="flex: 1; min-width: 0; cursor: pointer;">
+                            <option value="all">Todas</option>
+                            <!-- Se llenará con JS -->
+                        </select>
+                        <div class="vr flex-shrink-0"></div>
+                        <input type="date" class="form-control border-0 bg-transparent shadow-none" id="filterDate" style="width: auto; max-width: 130px; cursor: pointer;">
+                        <button class="btn btn-filter-clear rounded-circle flex-shrink-0" id="btnClearFilters" title="Limpiar filtros"><i class="fas fa-broom"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Grid de Notas -->
+        <div class="notes-grid" id="notesGrid">
+            <!-- Estado vacío inicial -->
+            <div class="col-12 text-center py-5 text-muted w-100" style="grid-column: 1 / -1;">
+                <i class="far fa-sticky-note fa-3x mb-3 opacity-50"></i>
+                <p>No tienes notas aún. ¡Crea la primera arriba!</p>
+            </div>
+        </div>
+
     </main>
+
+    <!-- Botón Flotante (FAB) -->
+    <button class="btn btn-primary btn-fab" data-bs-toggle="modal" data-bs-target="#modalNota" title="Crear nueva nota">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Modal Editor Amplio -->
+    <div class="modal fade" id="modalNota" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-centered">
+            <div class="modal-content border-0">
+                <!-- Header: Barra de Acciones (Tipo App) -->
+                <div class="modal-header border-bottom py-2 px-3 align-items-center" style="background-color: var(--secondary-color); min-height: 60px;">
+                    <div class="d-flex align-items-center flex-grow-1 gap-2">
+                        <button type="button" class="btn btn-link text-muted p-0 me-2 d-md-none" data-bs-dismiss="modal"><i class="fas fa-arrow-left"></i></button>
+                        <input type="hidden" id="noteId"> <!-- Campo oculto para ID -->
+                        <input type="text" class="form-control border-0 shadow-none bg-transparent fw-bold fs-5 p-0 text-truncate" id="noteTitle" placeholder="Título del documento">
+                    </div>
+                    <button type="button" class="btn-close d-none d-md-block ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Body: Espacio de Trabajo -->
+                <div class="modal-body p-0 d-flex" id="modalBodyContent" style="background-color: var(--bg-body);">
+                    
+                    <!-- Barra Lateral de Herramientas (Izquierda en Escritorio, Abajo en Móvil) -->
+                    <div id="tools-sidebar" class="d-flex flex-column">
+                        
+                        <div class="sidebar-card d-flex flex-column flex-grow-1">
+                        <!-- Panel de Acciones -->
+                        <div class="p-3 d-flex flex-column gap-3" id="actions-panel">
+                            <button type="button" class="btn btn-primary w-100 rounded-pill fw-bold py-2" id="btnAddNote">
+                                <i class="fas fa-save me-2"></i> Guardar Nota
+                            </button>
+                            
+                            <div class="d-flex gap-2">
+                                <select class="form-select border flex-grow-1" id="noteMateria" style="cursor: pointer;">
+                                    <option value="">Sin materia</option>
+                                </select>
+                                
+                                <div class="dropdown">
+                                    <button class="btn btn-light border rounded-circle p-2" data-bs-toggle="dropdown" title="Color de nota" id="btnColorPicker" style="width: 38px; height: 38px;">
+                                        <i class="fas fa-palette"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end p-2 shadow-sm" style="min-width: 220px;">
+                                        <div class="d-flex flex-wrap gap-2 justify-content-center" id="colorOptions">
+                                            <div class="color-option selected" data-color="white" style="background: #ffffff; border: 1px solid #ddd;"></div>
+                                            <div class="color-option" data-color="red" style="background: #f28b82;"></div>
+                                            <div class="color-option" data-color="orange" style="background: #fbbc04;"></div>
+                                            <div class="color-option" data-color="yellow" style="background: #fff475;"></div>
+                                            <div class="color-option" data-color="green" style="background: #ccff90;"></div>
+                                            <div class="color-option" data-color="teal" style="background: #a7ffeb;"></div>
+                                            <div class="color-option" data-color="blue" style="background: #cbf0f8;"></div>
+                                            <div class="color-option" data-color="darkblue" style="background: #aecbfa;"></div>
+                                            <div class="color-option" data-color="purple" style="background: #d7aefb;"></div>
+                                            <div class="color-option" data-color="pink" style="background: #fdcfe8;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor de la Barra de Herramientas Quill -->
+                        <div id="toolbar-sticky-container" class="flex-grow-1 overflow-y-auto border-top">
+                            <!-- La barra de herramientas de Quill se moverá aquí con JS -->
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor Principal (Toolbar + Editor) -->
+                    <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
+
+                    <!-- Área de Scroll (Fondo Gris) -->
+                    <div class="flex-grow-1 overflow-y-auto" id="editor-scroll-area">
+                        <!-- La "Hoja" de Papel -->
+                        <div id="editor-page" class="bg-white shadow-sm mx-auto" style="position: relative;">
+                            <div id="editor-container"></div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Quill Editor JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    
+    <!-- JS Específico -->
+    <script src="../assets/js/anotaciones.js"></script>
 </body>
 </html>

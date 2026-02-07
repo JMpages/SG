@@ -1,0 +1,565 @@
+/* ===== HEADER DE ANOTACIONES ===== */
+.anotaciones-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+}
+
+.anotaciones-header h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.anotaciones-header p {
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+/* Entrada de Nota Rápida */
+.quick-note-card {
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.quick-note-card.expanded {
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* Personalización del Editor Quill */
+#editor-container {
+    border: none !important;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.ql-toolbar.ql-snow {
+    border: none !important; /* Eliminar borde por defecto */
+    border-bottom: 1px solid var(--border-color) !important;
+    background-color: var(--secondary-color);
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 12px !important;
+}
+
+.ql-container.ql-snow {
+    border: none !important;
+    font-size: 1.1rem; /* Fuente más grande para mejor experiencia de escritura */
+}
+
+.ql-editor {
+    padding: 1.5rem !important;
+    min-height: 300px;
+    color: var(--text-primary);
+}
+
+/* Botones Modernos de la Barra de Herramientas */
+.ql-toolbar.ql-snow button {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease;
+    margin: 2px !important;
+    padding: 4px !important;
+}
+
+.ql-toolbar.ql-snow button:hover {
+    background-color: rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+.ql-toolbar.ql-snow button.ql-active {
+    background-color: rgba(102, 126, 234, 0.15) !important; /* Tinte del color primario */
+}
+
+.ql-toolbar.ql-snow button:hover .ql-stroke,
+.ql-toolbar.ql-snow button.ql-active .ql-stroke {
+    stroke: var(--primary-color) !important;
+}
+
+.ql-toolbar.ql-snow button:hover .ql-fill,
+.ql-toolbar.ql-snow button.ql-active .ql-fill {
+    fill: var(--primary-color) !important;
+}
+
+/* Dark Mode fixes for Quill Icons */
+[data-theme="dark"] .ql-stroke {
+    stroke: var(--text-secondary) !important;
+}
+[data-theme="dark"] .ql-fill {
+    fill: var(--text-secondary) !important;
+}
+[data-theme="dark"] .ql-picker {
+    color: var(--text-secondary) !important;
+}
+[data-theme="dark"] .ql-toolbar.ql-snow button:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .ql-toolbar.ql-snow button.ql-active {
+    background-color: rgba(255,255,255,0.15) !important;
+}
+
+/* Selector de Color */
+.color-option {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.color-option:hover {
+    transform: scale(1.2);
+}
+
+.color-option.selected {
+    border: 2px solid var(--text-primary);
+}
+
+/* Cuadrícula de Notas */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.note-card {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    position: relative;
+    transition: box-shadow 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.note-card:hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+
+.note-card:hover .note-actions {
+    opacity: 1;
+}
+
+.note-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.05);
+    color: var(--text-secondary);
+    font-weight: 600;
+    align-self: flex-start;
+    margin-bottom: 0.25rem;
+}
+
+.note-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.note-content {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    margin-bottom: 0.5rem;
+    max-height: 300px;
+    overflow-y: hidden;
+    position: relative;
+    /* Para contenido HTML */
+    display: block; 
+}
+
+.note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 0.5rem;
+}
+
+.note-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.note-actions {
+    opacity: 0; /* Se muestra al hover */
+    transition: opacity 0.2s;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Colores de fondo para notas (adaptados para modo claro/oscuro si es necesario) */
+.note-bg-red { background-color: #f28b82; border-color: transparent; color: #222; }
+.note-bg-orange { background-color: #fbbc04; border-color: transparent; color: #222; }
+.note-bg-yellow { background-color: #fff475; border-color: transparent; color: #222; }
+.note-bg-green { background-color: #ccff90; border-color: transparent; color: #222; }
+.note-bg-teal { background-color: #a7ffeb; border-color: transparent; color: #222; }
+.note-bg-blue { background-color: #cbf0f8; border-color: transparent; color: #222; }
+.note-bg-darkblue { background-color: #aecbfa; border-color: transparent; color: #222; }
+.note-bg-purple { background-color: #d7aefb; border-color: transparent; color: #222; }
+.note-bg-pink { background-color: #fdcfe8; border-color: transparent; color: #222; }
+
+/* Personalización de la Barra de Búsqueda */
+.search-bar-custom {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 2rem; /* Pill shape */
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.search-bar-custom:focus-within {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+    border-color: var(--primary-color);
+}
+
+.search-bar-custom input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+/* Barra de Filtros Custom */
+.filter-bar-custom {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+}
+
+.filter-bar-custom select,
+.filter-bar-custom input {
+    color: var(--text-primary);
+}
+
+.filter-bar-custom select option {
+    background-color: var(--secondary-color);
+    color: var(--text-primary);
+}
+
+.btn-filter-clear {
+    color: var(--text-muted);
+    background-color: rgba(0,0,0,0.05);
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Especificaciones del Modal del Editor */
+#modalNota .modal-content {
+    background-color: var(--secondary-color);
+}
+#modalNota .form-control::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+[data-theme="dark"] .btn-filter-clear {
+    background-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .filter-bar-custom input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* ===== BOTÓN FLOTANTE (FAB) ===== */
+.btn-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    z-index: 1050;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: none;
+    background-color: var(--primary-color, #667eea);
+    color: white;
+}
+
+.btn-fab:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    color: white;
+}
+
+/* ===== ESTILO TIPO WORD/CANVA (Editor Pantalla Completa) ===== */
+
+/* Contenedor de la Hoja */
+#editor-page {
+    width: 100%;
+    max-width: 850px; /* Ancho tipo documento */
+    min-height: 1000px; /* Altura mínima de hoja */
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    transition: background-color 0.3s;
+}
+
+/* En modo oscuro, la hoja se oscurece un poco para no quemar los ojos */
+[data-theme="dark"] #editor-page {
+    background-color: #1e1e1e !important;
+}
+
+/* ===== COMPORTAMIENTO RESPONSIVO (Escritorio vs Móvil) ===== */
+
+/* ESCRITORIO: Diseño tipo Canva (Barra lateral izquierda) */
+@media (min-width: 768px) {
+    #modalNota .modal-dialog {
+        height: 90vh;
+        max-width: 1200px; /* Más ancho para acomodar la barra lateral */
+    }
+    #modalNota .modal-content {
+        height: 100%;
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    
+    #modalBodyContent {
+        flex-direction: row; /* Lado a lado */
+    }
+
+    #tools-sidebar {
+        width: 280px;
+        height: 100%;
+        order: 0; /* Barra lateral a la IZQUIERDA */
+        background-color: var(--bg-light);
+        border-right: 1px solid var(--border-color);
+        border-left: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .sidebar-card {
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        height: 100%;
+    }
+
+    #editor-scroll-area {
+        order: 1;
+        flex: 1;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        background-color: #f3f4f6 !important; /* Fondo gris tipo Word */
+    }
+    
+    [data-theme="dark"] #editor-scroll-area {
+        background-color: #0d1117 !important;
+    }
+
+    /* Estilo de la Hoja más limpio */
+    #editor-page {
+        width: 100%;
+        max-width: 816px; /* Ancho A4 aproximado */
+        min-height: 1056px; /* Alto A4 aproximado */
+        height: fit-content;
+        border-radius: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        border: none;
+        margin-bottom: 2rem;
+    }
+
+    /* Barra de herramientas vertical en escritorio */
+    .ql-toolbar.ql-snow {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        background-color: transparent !important;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0 !important;
+        border: none !important;
+        padding: 1rem !important;
+    }
+    
+    .ql-toolbar.ql-snow .ql-formats {
+        margin-right: 0 !important;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.25rem;
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.75rem !important;
+        border-bottom: 1px solid var(--border-color);
+        width: 100%;
+        border-right: none;
+        padding-right: 0;
+    }
+    .ql-toolbar.ql-snow .ql-formats:last-child {
+        border-bottom: none;
+    }
+
+    /* Panel de acciones flotante en escritorio */
+    #actions-panel {
+        background-color: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0 !important;
+        border: none !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+}
+
+/* MÓVIL: Pantalla completa con barra abajo (Estilo App) */
+@media (max-width: 767.98px) {
+    #modalBodyContent {
+        flex-direction: column;
+        flex: 1;
+        overflow: hidden;
+    }
+    
+    #modalNota .modal-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+}
+
+.ql-toolbar.ql-snow {
+    border: none !important;
+    padding: 12px 20px !important;
+    background: transparent !important;
+}
+
+.ql-container.ql-snow {
+    border: none !important;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.ql-editor {
+    padding: 3rem !important;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    min-height: 500px;
+}
+
+@media (max-width: 768px) {
+    /* 1. El editor ocupa el espacio restante en móvil */
+    #editor-scroll-area {
+        order: 1;
+        flex: 1 1 auto;
+        background-color: #ffffff !important; /* Fondo blanco para continuidad en móvil */
+    }
+
+    [data-theme="dark"] #editor-scroll-area {
+        background-color: #1e1e1e !important;
+    }
+
+    /* 2. Barra lateral (Herramientas) va al final (ABAJO) y fija */
+    #tools-sidebar {
+        order: 2;
+        border-top: 1px solid var(--border-color);
+        background-color: var(--secondary-color);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        z-index: 1030;
+        flex-shrink: 0;
+    }
+
+    /* Reordenar dentro de la barra lateral en móvil: Barra de herramientas primero, Acciones después */
+    #toolbar-sticky-container { order: 1; border-bottom: 1px solid var(--border-color); }
+    #actions-panel { order: 2; padding: 0.75rem !important; gap: 0.5rem !important; }
+
+    /* Ajustes de la hoja en móvil para ocupar todo el ancho */
+    #editor-page {
+        margin: 0;
+        max-width: 100%;
+        min-height: 100%;
+        box-shadow: none !important;
+        border-radius: 0;
+        border: none;
+    }
+
+    .ql-editor {
+        padding: 1.5rem !important;
+        min-height: 100%;
+    }
+    
+    /* Toolbar organizado en móvil (Compacto ~2 filas) */
+    .ql-toolbar.ql-snow {
+        text-align: center;
+        overflow-x: visible;
+        white-space: normal;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 8px 2px !important;
+        gap: 4px;
+    }
+    
+    .ql-toolbar.ql-snow .ql-formats {
+        margin-right: 0 !important;
+        padding-right: 4px;
+        border-right: 1px solid var(--border-color);
+        margin-bottom: 4px !important;
+        padding-bottom: 0;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        flex-grow: 1; /* Aprovechar espacio horizontal */
+        justify-content: center;
+    }
+
+    .ql-toolbar.ql-snow .ql-formats:last-child {
+        border-right: none;
+        padding-right: 0;
+    }
+    
+    /* Ajustes para panel de acciones compacto */
+    #actions-panel {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+        border-top: 1px solid var(--border-color);
+        background-color: var(--bg-light);
+    }
+    
+    #btnAddNote {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+    }
+    
+    #actions-panel .d-flex.gap-2 {
+        width: 100%;
+    }
+
+    /* Botones optimizados en móvil */
+    .ql-toolbar.ql-snow button {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 4px !important;
+        margin: 1px !important;
+    }
+
+    /* Ajustar selectores para ahorrar espacio */
+    .ql-toolbar.ql-snow .ql-picker-label {
+        padding-left: 4px !important;
+        padding-right: 10px !important;
+    }
+    }

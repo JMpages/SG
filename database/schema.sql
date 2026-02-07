@@ -116,3 +116,23 @@ CREATE TABLE tareas (
     REFERENCES criterios_evaluacion(id)
     ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
+-- =========================================
+-- TABLA: anotaciones
+-- =========================================
+CREATE TABLE anotaciones (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  materia_id INT DEFAULT NULL,
+  titulo VARCHAR(255) DEFAULT NULL,
+  contenido LONGTEXT DEFAULT NULL, -- HTML del editor
+  texto LONGTEXT DEFAULT NULL,     -- Texto plano para búsquedas
+  color VARCHAR(20) DEFAULT 'white',
+  fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_usuario (usuario_id),
+  CONSTRAINT fk_anotaciones_usuario
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
