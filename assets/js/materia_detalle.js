@@ -3,8 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Estado de la aplicación
         state: {
             materia: null,
-            notas: {}, // { 'criterioId-evalNum': { real: 5.0, simulacion: 4.5 } }
-            esModoSimulacion: false,
+            notas: {}, // { 'criterioId-evalNum': 5.0 }
             isLoading: true,
             isSaving: false,
         },
@@ -16,25 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
             resumenCriteriosContainer: document.getElementById('resumen-criterios-container'),
             notaFinalTotal: document.getElementById('nota-final-total'),
             barraNotaFinal: document.getElementById('barra-nota-final'),
-            modoSimulacionSwitch: document.getElementById('modoSimulacion'),
-            btnSync: document.getElementById('btn-sync-real'),
             btnGuardar: document.getElementById('btn-guardar-notas'),
-            confirmModalEl: document.getElementById('confirmModal'),
-            btnConfirmAction: document.getElementById('btn-confirm-action'),
         },
 
         // Inicialización
         init() {
-            this.confirmModal = new bootstrap.Modal(this.elements.confirmModalEl);
             this.addEventListeners();
             this.loadMateriaData();
         },
 
         // Event Listeners
         addEventListeners() {
-            this.elements.modoSimulacionSwitch.addEventListener('change', this.handleModoSimulacionToggle.bind(this));
-            this.elements.btnSync.addEventListener('click', this.handleSyncRealToSim.bind(this));
-            this.elements.btnConfirmAction.addEventListener('click', this.executeSync.bind(this));
             this.elements.btnGuardar.addEventListener('click', this.handleGuardarNotas.bind(this));
             // Delegación de eventos para los inputs de notas
             this.elements.criteriosContainer.addEventListener('input', this.handleNotaInputChange.bind(this));
@@ -100,10 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.state.materia.criterios.forEach(criterio => {
                 for (const [evalNum, notaData] of Object.entries(criterio.notas)) {
                     const key = `${criterio.id}-${evalNum}`;
-                    this.state.notas[key] = {
-                        real: notaData.real,
-                        simulacion: notaData.simulacion,
-                    };
+                    this.state.notas[key] = notaData.real;
                 }
             });
         },
@@ -159,14 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const evaluacionesHtml = Array.from({ length: criterio.cantidad_evaluaciones }, (_, i) => {
                     const evalNum = i + 1;
                     const key = `${criterio.id}-${evalNum}`;
-                    const notaActual = this.state.notas[key] ? (this.state.esModoSimulacion ? this.state.notas[key].simulacion : this.state.notas[key].real) : null;
+                    const notaActual = this.state.notas[key];
                     const valor = notaActual !== null ? parseFloat(notaActual).toFixed(2) : '';
 
                     return `
                         <div class="evaluacion-row mb-2">
                             <label for="nota-${key}" class="form-label small text-muted mb-1">${escapeHtml(criterio.nombre)} #${evalNum}</label>
                             <div class="d-flex gap-2 align-items-center">
-                                <input type="number" class="form-control flex-grow-1 ${this.state.esModoSimulacion ? 'simulacion' : ''}" 
+                                <input type="number" class="form-control flex-grow-1" 
                                        id="nota-${key}" 
                                        data-criterio-id="${criterio.id}" 
                                        data-eval-num="${evalNum}"
@@ -207,9 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 1; i <= criterio.cantidad_evaluaciones; i++) {
                     const key = `${criterio.id}-${i}`;
                     const notaData = this.state.notas[key];
-                    if (notaData) {
-                        const nota = this.state.esModoSimulacion ? notaData.simulacion : notaData.real;
-                        if (nota !== null && nota !== '') {
+                    if (notaData !== undefined && notaData !== null && notaData !== '') {
+                        const nota = notaData;
+                        if (true) {
                             const valorNota = parseFloat(nota);
                             if (!isNaN(valorNota)) {
                                 sumaNotas += valorNota;
@@ -270,57 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.barraNotaFinal.style.width = `${widthPorcentaje}%`;
         },
 
-        // Manejadores de eventos
-        handleModoSimulacionToggle(e) {
-            this.state.esModoSimulacion = e.target.checked;
-            
-            if (this.state.esModoSimulacion) {
-                // UI: Mostrar botón sync y cambiar texto guardar
-                this.elements.btnSync.classList.remove('d-none');
-                this.elements.btnGuardar.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Simulación';
-                this.elements.btnGuardar.classList.replace('btn-primary', 'btn-warning'); // Cambio visual para alertar
-
-                // Lógica: Rellenar huecos vacíos en simulación con datos reales
-                for (const key in this.state.notas) {
-                    if (this.state.notas[key].simulacion === null || this.state.notas[key].simulacion === undefined) {
-                        this.state.notas[key].simulacion = this.state.notas[key].real;
-                    }
-                }
-            } else {
-                // UI: Ocultar botón sync y restaurar texto guardar
-                this.elements.btnSync.classList.add('d-none');
-                this.elements.btnGuardar.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
-                this.elements.btnGuardar.classList.replace('btn-warning', 'btn-primary');
-            }
-            
-            this.renderCriterios();
-            this.updateSummary();
-        },
-
-        handleSyncRealToSim() {
-            this.confirmModal.show();
-        },
-
-        executeSync() {
-            let notasEncontradas = 0;
-            for (const key in this.state.notas) {
-                if (this.state.notas[key].real !== null && this.state.notas[key].real !== '') {
-                    notasEncontradas++;
-                }
-                this.state.notas[key].simulacion = this.state.notas[key].real;
-            }
-            
-            this.renderCriterios();
-            this.updateSummary();
-            this.confirmModal.hide();
-            
-            if (notasEncontradas > 0) {
-                showToast('Simulación sincronizada con notas reales.', 'success');
-            } else {
-                showToast('No se encontraron notas reales para sincronizar.', 'warning');
-            }
-        },
-
         handleNotaInputChange(e) {
             if (e.target.matches('input.form-control')) {
                 const input = e.target;
@@ -350,15 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
  
-                if (!this.state.notas[key]) {
-                    this.state.notas[key] = { real: null, simulacion: null };
-                }
-
-                if (this.state.esModoSimulacion) {
-                    this.state.notas[key].simulacion = valor;
-                } else {
-                    this.state.notas[key].real = valor;
-                }
+                this.state.notas[key] = valor;
                 
                 this.updateSummary();
             }
@@ -380,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const notasPayload = [];
             for (const [key, value] of Object.entries(this.state.notas)) {
                 const [criterioId, evalNum] = key.split('-');
-                const nota = this.state.esModoSimulacion ? value.simulacion : value.real;
+                const nota = value;
                 
                 notasPayload.push({
                     criterio_id: parseInt(criterioId, 10),
@@ -396,7 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         materia_id: MATERIA_ID,
                         notas: notasPayload,
-                        es_simulacion: this.state.esModoSimulacion,
                     }),
                 });
 
@@ -404,10 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     showToast(result.message, 'success');
-                    // Si se guardaron notas reales, actualizamos el estado base
-                    if (!this.state.esModoSimulacion) {
-                        this.populateInitialNotas(); // Esto es para re-sincronizar, pero ya está actualizado.
-                    }
                 } else {
                     throw new Error(result.message || 'Error al guardar las notas.');
                 }

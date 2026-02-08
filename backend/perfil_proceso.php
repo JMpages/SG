@@ -60,8 +60,8 @@ try {
             throw new Exception('Todos los campos son obligatorios.');
         }
 
-        if (strlen($pass_nueva) < 6) {
-            throw new Exception('La nueva contraseña debe tener al menos 6 caracteres.');
+        if (strlen($pass_nueva) < 8) {
+            throw new Exception('La nueva contraseña debe tener al menos 8 caracteres.');
         }
 
         if ($pass_nueva !== $pass_confirm) {

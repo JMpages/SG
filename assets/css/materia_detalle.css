@@ -157,11 +157,6 @@ body {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-.form-control.simulacion {
-    border-style: dashed;
-    border-color: var(--primary-color);
-}
-
 /* Sidebar de Resumen */
 .summary-sidebar {
     position: sticky;
@@ -224,17 +219,6 @@ body {
 .resumen-criterio-item .nota-promedio {
     font-weight: 600;
     font-size: 0.9rem;
-}
-
-/* Switch de simulación */
-.form-switch .form-check-input {
-    width: 2.5em;
-    height: 1.25em;
-}
-
-.form-switch .form-check-input:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
 }
 
 /* Toast (ya está en materias.css, pero por si acaso) */

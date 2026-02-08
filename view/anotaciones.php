@@ -54,7 +54,7 @@ if(!isset($_SESSION['usuario'])){
                             <!-- Se llenará con JS -->
                         </select>
                         <div class="vr flex-shrink-0"></div>
-                        <input type="date" class="form-control border-0 bg-transparent shadow-none" id="filterDate" style="width: auto; max-width: 160px; cursor: pointer;">
+                        <input type="date" class="form-control border-0 bg-transparent shadow-none" id="filterDate" style="width: auto; max-width: 140px; cursor: pointer;">
                         <button class="btn btn-filter-clear rounded-circle flex-shrink-0" id="btnClearFilters" title="Limpiar filtros"><i class="fas fa-broom"></i></button>
                     </div>
                 </div>

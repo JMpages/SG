@@ -16,6 +16,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST'){
 
 // Obtener y sanitizar datos
 $nombre = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
+$email = isset($_POST['email']) ? trim($_POST['email']) : '';
 $password = isset($_POST['password']) ? $_POST['password'] : '';
 $password_confirm = isset($_POST['password_confirm']) ? $_POST['password_confirm'] : '';
 
@@ -26,6 +27,10 @@ $errores = [];
 // 1. Validar que los campos no estén vacíos
 if(empty($nombre)){
     $errores[] = "El nombre de usuario es requerido";
+}
+
+if(empty($email)){
+    $errores[] = "El correo electrónico es requerido";
 }
 
 if(empty($password)){
@@ -53,9 +58,14 @@ if(empty($errores)){
         $errores[] = "El nombre de usuario solo puede contener letras, números, guiones y guiones bajos";
     }
     
-    // Validar longitud de la contraseña (mínimo 6 caracteres)
-    if(strlen($password) < 6){
-        $errores[] = "La contraseña debe tener al menos 6 caracteres";
+    // Validar formato de email
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $errores[] = "El formato del correo electrónico no es válido";
+    }
+
+    // Validar longitud de la contraseña (mínimo 8 caracteres)
+    if(strlen($password) < 8){
+        $errores[] = "La contraseña debe tener al menos 8 caracteres";
     }
     
     // Validar que las contraseñas coinciden
@@ -63,15 +73,15 @@ if(empty($errores)){
         $errores[] = "Las contraseñas no coinciden";
     }
     
-    // Validar que el nombre de usuario no exista en la BD
+    // Validar que el usuario o email no existan en la BD
     if(empty($errores)){
         try {
-            $sql = "SELECT id FROM usuarios WHERE username = ?";
+            $sql = "SELECT id FROM usuarios WHERE username = ? OR email = ?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nombre]);
+            $stmt->execute([$nombre, $email]);
             
             if($stmt->rowCount() > 0){
-                $errores[] = "El nombre de usuario ya está registrado";
+                $errores[] = "El nombre de usuario o correo electrónico ya están registrados";
             }
         } catch(PDOException $e){
             $errores[] = "Error al validar el usuario: " . $e->getMessage();
@@ -92,9 +102,9 @@ try {
     $password_hash = password_hash($password, PASSWORD_BCRYPT);
     
     // Insertar el nuevo usuario
-    $sql = "INSERT INTO usuarios (username, password) VALUES (?, ?)";
+    $sql = "INSERT INTO usuarios (username, email, password) VALUES (?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$nombre, $password_hash]);
+    $stmt->execute([$nombre, $email, $password_hash]);
     
     $usuario_id = $pdo->lastInsertId();
 

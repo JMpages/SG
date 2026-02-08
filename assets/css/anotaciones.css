@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+
 /* ===== HEADER DE ANOTACIONES ===== */
 .anotaciones-header {
     background: var(--primary-gradient);
@@ -661,7 +663,7 @@
     /* Estado Expandido: Mostrar todo */
     #tools-sidebar.expanded #toolbar-sticky-container {
         max-height: 350px; /* Altura suficiente para ver todas las herramientas */
-        overflow-y: auto !important;
+        overflow: visible !important; /* Permitir que los dropdowns salgan del contenedor */
     }
     }
 
@@ -672,6 +674,7 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
     border: 1px solid var(--border-color) !important;
     min-width: 170px !important; /* Ancho mínimo para que los colores no se aprieten */
+    background-color: var(--secondary-color) !important; /* Fondo sólido para evitar transparencias */
 }
 
 /* Estilo para los selectores (dropdowns) para que parezcan botones */
@@ -709,5 +712,32 @@
 }
 
 .ql-snow .ql-picker.ql-size {
-    width: 75px !important; /* Ancho aumentado para que quepa número + flecha sin solaparse */
+    width: 55px !important; /* Ancho reducido para solo números */
+}
+
+/* Asegurar que los items del selector de tamaño sean visibles y tengan color */
+.ql-snow .ql-picker.ql-size .ql-picker-item {
+    color: var(--text-primary) !important;
+    padding: 4px 8px !important;
+}
+
+/* Ajuste específico para el dropdown de tamaño (evitar que sea gigante) */
+.ql-snow .ql-picker.ql-size .ql-picker-options {
+    min-width: auto !important; /* Quitar el ancho de 170px forzado */
+    width: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+}
+
+/* ===== FUENTE MANUSCRITA (MANUAL) ===== */
+.ql-font-handwriting {
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem; /* Un poco más grande para que sea legible */
+}
+
+/* Etiqueta en el menú desplegable de fuentes */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="handwriting"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="handwriting"]::before {
+    content: 'Manual';
+    font-family: 'Caveat', cursive;
 }

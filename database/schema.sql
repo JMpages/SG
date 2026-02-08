@@ -10,7 +10,10 @@ USE sistema_notas;
 CREATE TABLE usuarios (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL,
+  email VARCHAR(100) UNIQUE,
   password VARCHAR(255) NOT NULL,
+  token_recuperacion VARCHAR(64) DEFAULT NULL,
+  token_expiracion DATETIME DEFAULT NULL,
   UNIQUE KEY uk_username (username),
   KEY idx_username (username)
 ) ENGINE=InnoDB;

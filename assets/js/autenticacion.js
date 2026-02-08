@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Obtener valores
             const nombre = document.getElementById('nombre').value.trim();
+            const email = document.getElementById('email') ? document.getElementById('email').value.trim() : '';
             const password = document.getElementById('password').value;
             const passwordConfirm = document.getElementById('password_confirm').value;
             
@@ -28,11 +29,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 errores.push('El nombre de usuario solo puede contener letras, números, guiones y guiones bajos');
             }
             
+            // Validar email
+            if(document.getElementById('email')) {
+                if(email === '') {
+                    errores.push('El correo electrónico es requerido');
+                } else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    errores.push('El formato del correo electrónico no es válido');
+                }
+            }
+
             // Validar contraseña
             if(password === '') {
                 errores.push('La contraseña es requerida');
-            } else if(password.length < 6) {
-                errores.push('La contraseña debe tener al menos 6 caracteres');
+            } else if(password.length < 8) {
+                errores.push('La contraseña debe tener al menos 8 caracteres');
             }
             
             // Validar confirmación de contraseña

@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Llenar select del formulario
                 let options = '<option value="">Sin materia (General)</option>';
-                let filterOptions = '<option value="all">Materias</option>';
+                let filterOptions = '<option value="all">Todas</option>';
                 
                 materiasCache.forEach(m => {
                     if(m.activa == 1) {
