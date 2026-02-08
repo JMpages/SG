@@ -29,10 +29,6 @@ if(empty($nombre)){
     $errores[] = "El nombre de usuario es requerido";
 }
 
-if(empty($email)){
-    $errores[] = "El correo electrónico es requerido";
-}
-
 if(empty($password)){
     $errores[] = "La contraseña es requerida";
 }
@@ -59,7 +55,7 @@ if(empty($errores)){
     }
     
     // Validar formato de email
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+    if(!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)){
         $errores[] = "El formato del correo electrónico no es válido";
     }
 
@@ -76,9 +72,15 @@ if(empty($errores)){
     // Validar que el usuario o email no existan en la BD
     if(empty($errores)){
         try {
-            $sql = "SELECT id FROM usuarios WHERE username = ? OR email = ?";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nombre, $email]);
+            if (!empty($email)) {
+                $sql = "SELECT id FROM usuarios WHERE username = ? OR email = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$nombre, $email]);
+            } else {
+                $sql = "SELECT id FROM usuarios WHERE username = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$nombre]);
+            }
             
             if($stmt->rowCount() > 0){
                 $errores[] = "El nombre de usuario o correo electrónico ya están registrados";
@@ -102,9 +104,10 @@ try {
     $password_hash = password_hash($password, PASSWORD_BCRYPT);
     
     // Insertar el nuevo usuario
+    $emailToSave = empty($email) ? null : $email;
     $sql = "INSERT INTO usuarios (username, email, password) VALUES (?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$nombre, $email, $password_hash]);
+    $stmt->execute([$nombre, $emailToSave, $password_hash]);
     
     $usuario_id = $pdo->lastInsertId();
 

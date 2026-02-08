@@ -154,6 +154,41 @@ if (!isset($_SESSION['usuario_id'])) {
         </div>
     </div>
 
+    <!-- Modal Confirmar Eliminación Cuenta -->
+    <div class="modal fade" id="modalEliminarCuenta" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Eliminar Cuenta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Esta acción eliminará permanentemente tu cuenta y todos tus datos asociados. No se puede deshacer.</p>
+                    <div class="mb-3">
+                        <label for="password-eliminar" class="form-label">Ingresa tu contraseña para confirmar:</label>
+                        <input type="password" class="form-control" id="password-eliminar" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirmar-eliminar">Eliminar definitivamente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-info-circle me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   

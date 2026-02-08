@@ -16,6 +16,15 @@ if(isset($_SESSION['usuario'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuario</title>
+    <!-- Script para aplicar tema (claro/oscuro) -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <!-- iconos de google -->
@@ -57,6 +66,10 @@ if(isset($_SESSION['usuario'])){
                                     <div class="col-12 mb-3">
                                         <label for="nombre" class="form-label">Nombre de usuario</label>
                                         <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre de usuario" required>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="email" class="form-label">Correo Electrónico <span class="text-muted small">(Opcional)</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Para recuperar contraseña">
                                     </div>
                                     <div class="col-12 mb-3">
                                         <label for="password" class="form-label">Contraseña</label>

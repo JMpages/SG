@@ -31,13 +31,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnEliminar = document.getElementById('btn-eliminar-cuenta');
     if (btnEliminar) {
         btnEliminar.addEventListener('click', function() {
-            if(confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.')) {
-                const password = prompt('Por favor, ingresa tu contraseña para confirmar:');
-                if(password) {
-                    eliminarCuenta(password);
-                }
-            }
+            const modal = new bootstrap.Modal(document.getElementById('modalEliminarCuenta'));
+            modal.show();
         });
+    }
+
+    // Botón confirmar eliminación (dentro del modal)
+    const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar');
+    if (btnConfirmarEliminar) {
+        btnConfirmarEliminar.addEventListener('click', eliminarCuenta);
     }
 
     // Listener para cargar actividad solo cuando se abre la pestaña
@@ -46,6 +48,34 @@ document.addEventListener('DOMContentLoaded', function() {
         tabActividad.addEventListener('shown.bs.tab', cargarActividad);
     }
 });
+
+// Función para mostrar notificaciones Toast
+function showToast(message, type = 'info') {
+    const toastEl = document.getElementById('liveToast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    
+    if (!toastEl) return;
+
+    // Reset classes
+    toastIcon.className = 'fas me-2';
+    
+    if (type === 'success') {
+        toastIcon.classList.add('fa-check-circle', 'text-success');
+        toastTitle.textContent = '¡Éxito!';
+    } else if (type === 'error') {
+        toastIcon.classList.add('fa-exclamation-circle', 'text-danger');
+        toastTitle.textContent = 'Error';
+    } else {
+        toastIcon.classList.add('fa-info-circle', 'text-primary');
+        toastTitle.textContent = 'Información';
+    }
+    
+    toastMessage.textContent = message;
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+}
 
 async function cargarDatosPerfil() {
     try {
@@ -71,7 +101,13 @@ async function cargarDatosPerfil() {
 }
 
 async function actualizarPerfil() {
-    const nombre = document.getElementById('perfil-nombre').value;
+    const nombreInput = document.getElementById('perfil-nombre');
+    const nombre = nombreInput.value;
+    const btn = document.querySelector('#form-perfil-datos button[type="submit"]');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
     
     try {
         const response = await fetch('../backend/perfil_proceso.php', {
@@ -84,12 +120,19 @@ async function actualizarPerfil() {
         });
         const data = await response.json();
         
-        alert(data.message);
         if(data.status === 'success') {
-            location.reload(); // Recargar para actualizar nombre en header/sesión
+            showToast(data.message, 'success');
+            // Actualizar UI localmente sin recargar
+            const textUsuario = document.getElementById('display-usuario');
+            if(textUsuario) textUsuario.textContent = nombre;
+        } else {
+            showToast(data.message, 'error');
         }
     } catch (error) {
-        alert('Error de conexión');
+        showToast('Error de conexión', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
 
@@ -97,6 +140,17 @@ async function cambiarPassword() {
     const actual = document.getElementById('pass-actual').value;
     const nueva = document.getElementById('pass-nueva').value;
     const confirm = document.getElementById('pass-confirm').value;
+
+    if(nueva !== confirm) {
+        showToast('Las nuevas contraseñas no coinciden', 'error');
+        return;
+    }
+
+    const btn = document.querySelector('#form-perfil-password button[type="submit"]');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
 
     try {
         const response = await fetch('../backend/perfil_proceso.php', {
@@ -111,16 +165,34 @@ async function cambiarPassword() {
         });
         const data = await response.json();
         
-        alert(data.message);
         if(data.status === 'success') {
+            showToast(data.message, 'success');
             document.getElementById('form-perfil-password').reset();
+        } else {
+            showToast(data.message, 'error');
         }
     } catch (error) {
-        alert('Error de conexión');
+        showToast('Error de conexión', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
 
-async function eliminarCuenta(password) {
+async function eliminarCuenta() {
+    const passwordInput = document.getElementById('password-eliminar');
+    const password = passwordInput.value;
+    
+    if(!password) {
+        showToast('Por favor ingresa tu contraseña para confirmar', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-confirmar-eliminar');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Eliminando...';
+
     try {
         const response = await fetch('../backend/perfil_proceso.php', {
             method: 'POST',
@@ -133,13 +205,16 @@ async function eliminarCuenta(password) {
         const data = await response.json();
         
         if(data.status === 'success') {
-            alert(data.message);
             window.location.href = '../view/login.php';
         } else {
-            alert(data.message);
+            showToast(data.message, 'error');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
         }
     } catch (error) {
-        alert('Error al intentar eliminar la cuenta');
+        showToast('Error al intentar eliminar la cuenta', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
 

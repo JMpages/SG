@@ -31,9 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Validar email
             if(document.getElementById('email')) {
-                if(email === '') {
-                    errores.push('El correo electrónico es requerido');
-                } else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                if(email !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                     errores.push('El formato del correo electrónico no es válido');
                 }
             }
