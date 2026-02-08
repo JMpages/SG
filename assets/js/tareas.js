@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (isVencida) cardClass += ' vencida';
 
                 return `
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-4" id="tarea-col-${tarea.id}">
                     <div class="${cardClass}">
                         <div class="tarea-header">
                             <div class="d-flex align-items-center overflow-hidden">
@@ -338,6 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (result.status === 'success') {
                     this.elements.modalEliminar.hide();
                     this.showToast(result.message, 'success');
+                    
                     if (this.state.currentView === 'calendar') {
                         this.loadCalendarTasks();
                     } else {
