@@ -48,14 +48,14 @@ if(!isset($_SESSION['usuario'])){
                 </div>
                 <div class="col-12 col-md-6 mt-3 mt-md-0 d-flex justify-content-md-end">
                     <!-- Barra de Filtros -->
-                    <div class="d-flex align-items-center gap-1 filter-bar-custom p-2 rounded-pill shadow-sm" style="max-width: 100%;">
-                        <select class="form-select border-0 bg-transparent shadow-none text-truncate" id="filterMateria" style="flex: 1; min-width: 0; cursor: pointer;">
+                    <div class="filter-bar-custom shadow-sm">
+                        <select class="form-select border-0 shadow-none text-truncate" id="filterMateria" style="cursor: pointer;">
                             <option value="all">Todas</option>
                             <!-- Se llenará con JS -->
                         </select>
-                        <div class="vr flex-shrink-0"></div>
-                        <input type="date" class="form-control border-0 bg-transparent shadow-none" id="filterDate" style="width: auto; max-width: 140px; cursor: pointer;">
-                        <button class="btn btn-filter-clear rounded-circle flex-shrink-0" id="btnClearFilters" title="Limpiar filtros"><i class="fas fa-broom"></i></button>
+                        <div class="vr"></div>
+                        <input type="date" class="form-control border-0 shadow-none" id="filterDate" style="cursor: pointer;">
+                        <button class="btn btn-filter-clear" id="btnClearFilters" title="Limpiar filtros"><i class="fas fa-broom"></i></button>
                     </div>
                 </div>
             </div>

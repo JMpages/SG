@@ -242,13 +242,37 @@
 .filter-bar-custom {
     background-color: var(--secondary-color);
     border: 1px solid var(--border-color);
+    padding: 0.35rem 0.5rem;
+    border-radius: 50rem; /* Restaurar estilo redondeado completo */
+    display: flex;
+    flex-wrap: nowrap; /* Forzar una sola línea */
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
 }
 
 .filter-bar-custom select,
 .filter-bar-custom input {
     color: var(--text-primary);
-    padding: 0.25rem 0.5rem !important; /* Reducir padding para ganar espacio */
-    font-size: 0.9rem;
+    padding: 0.6rem 2.5rem 0.6rem 1rem !important; /* Más espacio y hueco para la flecha */
+    font-size: 0.95rem;
+    border: none !important;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    /* Custom arrow to prevent overlap */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23555' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px 12px;
+}
+
+.filter-bar-custom select {
+    min-width: 100px; /* Reducido para evitar rigidez, flex-grow lo expandirá */
+    flex-grow: 1;
 }
 
 .filter-bar-custom select option {
@@ -256,15 +280,60 @@
     color: var(--text-primary);
 }
 
+.filter-bar-custom input[type="date"] {
+    width: auto;
+    background-image: none; /* El input date tiene su propio indicador */
+    padding-right: 1rem !important;
+}
+
 .btn-filter-clear {
     color: var(--text-muted);
     background-color: rgba(0,0,0,0.05);
     border: none;
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-filter-clear:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.filter-bar-custom .vr {
+    height: 24px;
+    opacity: 0.25;
+    flex-shrink: 0;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .filter-bar-custom {
+        width: 100%;
+        padding: 0.25rem 0.5rem;
+        gap: 0.25rem;
+    }
+    /* Reducir anchos mínimos en móvil para que quepan mejor en la barra */
+    .filter-bar-custom select {
+        min-width: 0; /* CRUCIAL: Permite que el texto se corte (...) si no cabe */
+        font-size: 0.9rem;
+        padding-right: 1.5rem !important;
+        background-position: right 0.5rem center;
+    }
+    .filter-bar-custom input[type="date"] {
+        font-size: 0.9rem;
+        max-width: 115px; /* Limitar ancho en móvil para evitar desbordamiento */
+        padding-left: 0.5rem !important;
+    }
+    .btn-filter-clear {
+        width: 36px;
+        height: 36px;
+    }
 }
 
 /* Especificaciones del Modal del Editor */
@@ -274,6 +343,10 @@
 #modalNota .form-control::placeholder {
     color: var(--text-muted);
     opacity: 0.6;
+}
+
+[data-theme="dark"] .filter-bar-custom select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2395a9bb' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 }
 
 [data-theme="dark"] .btn-filter-clear {
