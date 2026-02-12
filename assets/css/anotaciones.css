@@ -133,9 +133,8 @@
 /* Cuadrícula de Notas */
 .notes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1.5rem;
-    align-items: start;
 }
 
 .note-card {
@@ -147,7 +146,7 @@
     transition: box-shadow 0.2s, transform 0.2s;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    height: 100%;
 }
 
 .note-card:hover {
@@ -158,6 +157,10 @@
 .note-card:hover .note-actions {
     opacity: 1;
 }
+
+/* Espaciado interno para elementos de la tarjeta (reemplaza gap de flex) */
+.note-card > * { margin-bottom: 0.5rem; }
+.note-card > *:last-child { margin-bottom: 0; }
 
 .note-badge {
     font-size: 0.7rem;
@@ -207,6 +210,37 @@
     transition: opacity 0.2s;
     display: flex;
     gap: 0.5rem;
+}
+
+/* Responsive Masonry y Ajustes Móviles */
+@media (max-width: 1200px) {
+    /* Grid se ajusta automáticamente */
+}
+
+@media (max-width: 992px) {
+    /* Grid se ajusta automáticamente */
+}
+
+@media (max-width: 576px) {
+    .notes-grid { 
+        grid-template-columns: repeat(2, 1fr); /* Forzar 2 columnas en móvil */
+        gap: 0.75rem;
+    }
+    .note-card {
+        margin-bottom: 0;
+        padding: 0.75rem;
+    }
+    .note-title { font-size: 1rem; }
+    .note-content { font-size: 0.85rem; max-height: 150px; }
+    
+    /* Acciones siempre visibles en móvil */
+    .note-actions {
+        opacity: 1 !important;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--border-color);
+        justify-content: flex-end;
+    }
 }
 
 /* Colores de fondo para notas (adaptados para modo claro/oscuro si es necesario) */
@@ -284,6 +318,8 @@
     width: auto;
     background-image: none; /* El input date tiene su propio indicador */
     padding-right: 1rem !important;
+    min-height: 38px; /* Altura mínima para touch targets */
+    color: var(--text-primary); /* Asegurar color explícito */
 }
 
 .btn-filter-clear {
@@ -327,7 +363,7 @@
     }
     .filter-bar-custom input[type="date"] {
         font-size: 0.9rem;
-        max-width: 115px; /* Limitar ancho en móvil para evitar desbordamiento */
+        max-width: 140px; /* Aumentado para que quepa el placeholder mm/dd/aaaa */
         padding-left: 0.5rem !important;
     }
     .btn-filter-clear {

@@ -262,9 +262,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="note-footer">
                         <span class="note-date">${fechaDisplay}</span>
                         <div class="note-actions">
-                            <button class="btn btn-sm btn-light rounded-circle" title="Convertir a Tarea" onclick="alert('Funcionalidad sugerida: Convertir a Tarea')">
-                                <i class="fas fa-check-square"></i>
-                            </button>
                             <button class="btn btn-sm btn-light rounded-circle text-danger" onclick="event.stopPropagation(); eliminarNota(${nota.id})">
                                 <i class="fas fa-trash"></i>
                             </button>

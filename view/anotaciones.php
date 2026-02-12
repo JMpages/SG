@@ -24,13 +24,10 @@ if(!isset($_SESSION['usuario'])){
     
     <!-- Estilos Personalizados -->
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/materias.css">
     <link rel="stylesheet" href="../assets/css/anotaciones.css">
     <!-- Quill Editor CSS -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <style>
-        /* Ajustes rápidos para masonry layout si no carga el CSS externo inmediatamente */
-        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-    </style>
 </head>
 <body>
     <!-- Navbar -->
