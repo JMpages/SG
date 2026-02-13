@@ -85,15 +85,7 @@ if(!isset($_SESSION['usuario'])){
                         <input type="hidden" id="noteId"> <!-- Campo oculto para ID -->
                         <input type="text" class="form-control border-0 shadow-none bg-transparent fw-bold fs-5 p-0 text-truncate" id="noteTitle" placeholder="Título del documento">
                     </div>
-                    <div class="dropdown d-inline-block me-2">
-                        <button class="btn btn-link text-secondary" type="button" id="dropdownExport" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar">
-                            <i class="fas fa-download fa-lg"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow" aria-labelledby="dropdownExport">
-                            <li><a class="dropdown-item" href="#" id="btnExportPdf"><i class="fas fa-file-pdf me-2 text-danger"></i>Exportar a PDF</a></li>
-                            <li><a class="dropdown-item" href="#" id="btnExportWord"><i class="fas fa-file-word me-2 text-primary"></i>Exportar a Word</a></li>
-                        </ul>
-                    </div>
+
                     <button type="button" class="btn-close d-none d-md-block ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -111,12 +103,13 @@ if(!isset($_SESSION['usuario'])){
                         </button>
 
                         <!-- Panel de Acciones -->
-                        <div class="p-3 d-flex flex-column gap-3" id="actions-panel">
-                            <div class="d-flex gap-2">
-                                <select class="form-select border flex-grow-1" id="noteMateria" style="cursor: pointer;">
-                                    <option value="">Sin materia</option>
-                                </select>
-                            </div>
+                        <div class="p-3 d-flex align-items-center gap-2" id="actions-panel">
+                            <select class="form-select border flex-grow-1" id="noteMateria" style="cursor: pointer;">
+                                <option value="">Sin materia</option>
+                            </select>
+                            <button class="btn btn-outline-danger" id="btnDownloadPdf" title="Descargar como PDF">
+                                <i class="fas fa-file-pdf"></i> <i class="fas fa-download fa-xs"></i>
+                            </button>
                         </div>
 
                         <!-- Contenedor de la Barra de Herramientas Quill -->
@@ -179,7 +172,7 @@ if(!isset($_SESSION['usuario'])){
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Quill Editor JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-    <!-- html2pdf JS -->
+    <!-- HTML2PDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <!-- JS Específico -->

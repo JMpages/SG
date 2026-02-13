@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterMateria = document.getElementById('filterMateria');
     const filterDate = document.getElementById('filterDate');
     const btnClearFilters = document.getElementById('btnClearFilters');
+    const btnDownloadPdf = document.getElementById('btnDownloadPdf');
     const modalInstance = new bootstrap.Modal(modalNota);
     const modalEliminar = new bootstrap.Modal(document.getElementById('modalEliminarNota'));
     const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminarNota');
@@ -26,7 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cargar notas desde el backend
     cargarNotasBackend();
     setupMobileToolbar(); // Inicializar lógica móvil
-    setupExportButton(); // Configurar botón de exportación
+
+    // Listener para PDF
+    if(btnDownloadPdf) btnDownloadPdf.addEventListener('click', descargarPDF);
 
     function initQuill() {
         // 1. Configurar Tamaños de Fuente Numéricos
@@ -387,6 +390,102 @@ document.addEventListener('DOMContentLoaded', function() {
         }).join('');
     }
 
+    // 7. Generar PDF (Versión Impresión Nativa para Texto Real)
+    function descargarPDF() {
+        // Usamos un iframe oculto y window.print() para garantizar que el texto sea seleccionable (vectorial)
+        // y no una imagen como sucede con html2canvas/html2pdf.
+        
+        const titleInput = document.getElementById('noteTitle');
+        const rawTitle = titleInput.value.trim() || 'Nota_sin_titulo';
+        const editorContent = document.querySelector('.ql-editor').innerHTML;
+        
+        // Feedback visual (Loading)
+        const originalContent = btnDownloadPdf.innerHTML;
+        btnDownloadPdf.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btnDownloadPdf.disabled = true;
+
+        // Crear iframe oculto
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        
+        // Estilos CSS: Bootstrap + Quill + Ajustes de Impresión
+        const styles = `
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+            <style>
+                @page { size: A4; margin: 2cm; }
+                body { 
+                    padding: 0; 
+                    margin: 0;
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                    color: #000;
+                    background: #fff;
+                }
+                h1 { 
+                    margin-bottom: 1.5rem; 
+                    border-bottom: 2px solid #eee; 
+                    padding-bottom: 0.5rem;
+                    font-size: 2rem;
+                }
+                .ql-container.ql-snow { border: none !important; }
+                .ql-editor { padding: 0 !important; overflow: visible !important; }
+                img { max-width: 100%; height: auto; }
+            </style>
+        `;
+
+        doc.open();
+        doc.write(`
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>${rawTitle}</title>
+                ${styles}
+            </head>
+            <body>
+                <div class="container-fluid">
+                    <h1>${rawTitle}</h1>
+                    <div class="ql-container ql-snow">
+                        <div class="ql-editor">
+                            ${editorContent}
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            try {
+                                window.print();
+                            } catch(e) { console.error(e); }
+                        }, 500);
+                    };
+                </script>
+            </body>
+            </html>
+        `);
+        doc.close();
+
+        // Restaurar botón
+        setTimeout(() => {
+            btnDownloadPdf.innerHTML = originalContent;
+            btnDownloadPdf.disabled = false;
+            showToast('Selecciona "Guardar como PDF" en la ventana de impresión.', 'info');
+            
+            // Limpiar iframe después de un tiempo prudencial
+            setTimeout(() => {
+                if(document.body.contains(iframe)) document.body.removeChild(iframe);
+            }, 60000);
+        }, 1000);
+    }
+
     // --- FUNCIONES BACKEND ---
 
     async function cargarNotasBackend() {
@@ -440,172 +539,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('Error de conexión', 'error');
         });
     });
-
-    // --- FUNCIONES DE EXPORTACIÓN ---
-    
-    const exportarPDF = () => {
-        if (typeof html2pdf === 'undefined') {
-            showToast('Error: Librería PDF no cargada. Verifique su conexión.', 'error');
-            return;
-        }
-
-        const title = document.getElementById('noteTitle').value || 'Nota sin título';
-        const content = document.querySelector('.ql-editor').innerHTML;
-        
-        // Crear elemento temporal adjunto al body para asegurar renderizado de estilos
-        const element = document.createElement('div');
-        element.style.width = '800px';
-        element.style.padding = '30px';
-        element.style.background = 'white';
-        element.style.position = 'absolute';
-        element.style.left = '-9999px';
-        element.style.top = '0';
-        element.style.fontFamily = 'Arial, sans-serif';
-        
-        element.innerHTML = `
-            <h1 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">${title}</h1>
-            <div class="ql-editor" style="padding: 0;">${content}</div>
-        `;
-        
-        document.body.appendChild(element);
-
-        const opt = {
-            margin:       0.5,
-            filename:     `${title.replace(/[^a-z0-9]/gi, '_')}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-
-        showToast('Generando PDF...', 'info');
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            document.body.removeChild(element);
-            showToast('PDF descargado correctamente', 'success');
-        }).catch(err => {
-            console.error(err);
-            document.body.removeChild(element);
-            showToast('Error al generar PDF', 'error');
-        });
-    };
-
-    const exportarWord = () => {
-        const title = document.getElementById('noteTitle').value || 'Nota sin título';
-        const content = document.querySelector('.ql-editor').innerHTML;
-
-        const preHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head><meta charset='utf-8'><title>${title}</title></head><body>`;
-        const postHtml = "</body></html>";
-        const html = preHtml + `<h1 style="margin-bottom:20px;">${title}</h1>` + content + postHtml;
-
-        const blob = new Blob(['\ufeff', html], {
-            type: 'application/msword'
-        });
-        
-        const url = URL.createObjectURL(blob);
-        const downloadLink = document.createElement("a");
-        document.body.appendChild(downloadLink);
-        downloadLink.href = url;
-        downloadLink.download = `${title.replace(/[^a-z0-9]/gi, '_')}.doc`;
-        downloadLink.click();
-        
-        document.body.removeChild(downloadLink);
-        URL.revokeObjectURL(url);
-        showToast('Documento Word descargado', 'success');
-    };
-
-    // 9. Configuración del Botón de Exportación (Modal)
-    function setupExportButton() {
-        // 1. Limpiar elementos anteriores si existen
-        const oldDropdown = document.getElementById('dropdownExport');
-        if (oldDropdown) {
-            const container = oldDropdown.closest('.dropdown');
-            if (container) container.remove();
-            else oldDropdown.remove();
-        }
-        
-        const oldBtn = document.getElementById('btnOpenExportModal');
-        if (oldBtn) oldBtn.remove();
-
-        // 2. Inyectar HTML del Modal de Exportación si no existe
-        if (!document.getElementById('modalExportar')) {
-            const modalHtml = `
-            <div class="modal fade" id="modalExportar" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
-                <div class="modal-dialog modal-dialog-centered modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title fs-6">Exportar Nota</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body d-grid gap-2">
-                            <button class="btn btn-outline-danger d-flex align-items-center justify-content-start gap-3 p-3" id="btnExportPdfModal">
-                                <i class="fas fa-file-pdf fa-2x"></i> 
-                                <span>Exportar a PDF</span>
-                            </button>
-                            <button class="btn btn-outline-primary d-flex align-items-center justify-content-start gap-3 p-3" id="btnExportWordModal">
-                                <i class="fas fa-file-word fa-2x"></i> 
-                                <span>Exportar a Word</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
-
-        // 3. Inyectar Botón en el Header del Modal de Nota
-        const modalHeader = document.querySelector('#modalNota .modal-header');
-        
-        if (modalHeader) {
-            const exportBtn = document.createElement('button');
-            exportBtn.className = 'btn btn-light border btn-sm ms-auto me-3';
-            exportBtn.id = 'btnOpenExportModal';
-            exportBtn.type = 'button';
-            exportBtn.innerHTML = '<i class="fas fa-download"></i> <span class="d-none d-sm-inline ms-1">Exportar</span>';
-            
-            // Insertar antes del botón de cerrar
-            const closeBtn = modalHeader.querySelector('.btn-close');
-            if (closeBtn) {
-                modalHeader.insertBefore(exportBtn, closeBtn);
-            } else {
-                modalHeader.appendChild(exportBtn);
-            }
-
-            // 4. Asignar eventos
-            exportBtn.addEventListener('click', () => {
-                const exportModal = new bootstrap.Modal(document.getElementById('modalExportar'));
-                exportModal.show();
-            });
-
-            // Eventos de los botones del modal
-            const btnPdf = document.getElementById('btnExportPdfModal');
-            const btnWord = document.getElementById('btnExportWordModal');
-
-            // Usar replaceWith para eliminar listeners anteriores si la función se ejecuta múltiples veces
-            if(btnPdf) {
-                const newBtnPdf = btnPdf.cloneNode(true);
-                btnPdf.parentNode.replaceChild(newBtnPdf, btnPdf);
-                newBtnPdf.addEventListener('click', () => {
-                    exportarPDF();
-                    const modalEl = document.getElementById('modalExportar');
-                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                    if(modalInstance) modalInstance.hide();
-                });
-            }
-
-            if(btnWord) {
-                const newBtnWord = btnWord.cloneNode(true);
-                btnWord.parentNode.replaceChild(newBtnWord, btnWord);
-                newBtnWord.addEventListener('click', () => {
-                    exportarWord();
-                    const modalEl = document.getElementById('modalExportar');
-                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                    if(modalInstance) modalInstance.hide();
-                });
-            }
-        }
-    }
 
     // Función para abrir nota existente en el modal
     window.abrirNotaParaEditar = function(id) {
