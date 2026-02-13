@@ -38,18 +38,21 @@ try {
                 throw new Exception('La nota debe tener al menos un título o contenido.');
             }
 
+            $response = ['status' => 'success'];
             if ($id) {
                 $sql = "UPDATE anotaciones SET titulo = ?, contenido = ?, texto = ?, materia_id = ?, color = ? WHERE id = ? AND usuario_id = ?";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$titulo, $contenido, $texto, $materia_id, $color, $id, $usuario_id]);
-                $msg = 'Nota actualizada correctamente';
+                $response['message'] = 'Nota actualizada correctamente';
+                $response['id'] = $id;
             } else {
                 $sql = "INSERT INTO anotaciones (usuario_id, titulo, contenido, texto, materia_id, color) VALUES (?, ?, ?, ?, ?, ?)";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$usuario_id, $titulo, $contenido, $texto, $materia_id, $color]);
-                $msg = 'Nota creada correctamente';
+                $response['message'] = 'Nota creada correctamente';
+                $response['id'] = $pdo->lastInsertId();
             }
-            echo json_encode(['status' => 'success', 'message' => $msg]);
+            echo json_encode($response);
             break;
 
         case 'eliminar':

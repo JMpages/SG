@@ -147,6 +147,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    aspect-ratio: 1 / 1;
 }
 
 .note-card:hover {
@@ -185,11 +186,21 @@
     color: var(--text-secondary);
     white-space: pre-wrap;
     margin-bottom: 0.5rem;
-    max-height: 300px;
-    overflow-y: hidden;
+    flex: 1;
+    overflow: hidden;
     position: relative;
+    min-height: 0; /* Permite que el contenedor flex se encoja correctamente */
+    overflow-wrap: break-word; /* Evita desbordamiento horizontal de palabras largas */
+    mask-image: linear-gradient(180deg, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, black 70%, transparent 100%);
     /* Para contenido HTML */
     display: block; 
+}
+
+.note-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
 }
 
 .note-footer {
@@ -223,7 +234,8 @@
 
 @media (max-width: 576px) {
     .notes-grid { 
-        grid-template-columns: repeat(2, 1fr); /* Forzar 2 columnas en móvil */
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
     }
     .note-card {
@@ -231,15 +243,30 @@
         padding: 0.75rem;
     }
     .note-title { font-size: 1rem; }
-    .note-content { font-size: 0.85rem; max-height: 150px; }
+    .note-content { 
+        font-size: 0.85rem; 
+    }
     
     /* Acciones siempre visibles en móvil */
     .note-actions {
         opacity: 1 !important;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+        justify-content: flex-end;
+    }
+    
+    .note-footer {
         margin-top: 0.5rem;
         padding-top: 0.5rem;
-        border-top: 1px solid var(--border-color);
-        justify-content: flex-end;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+}
+
+/* Para pantallas muy pequeñas, 1 sola columna */
+@media (max-width: 360px) {
+    .notes-grid {
+        column-count: 1;
     }
 }
 
@@ -429,6 +456,7 @@
     margin-top: 1rem;
     margin-bottom: 1rem;
     transition: background-color 0.3s;
+    background-color: #ffffff;
 }
 
 /* En modo oscuro, la hoja se oscurece un poco para no quemar los ojos */
@@ -447,7 +475,7 @@
     #modalNota .modal-content {
         height: 100%;
         border-radius: 0.75rem;
-        overflow: hidden;
+        overflow: visible; /* Permitir que los dropdowns salgan del contenedor */
     }
     
     #modalBodyContent {
@@ -849,4 +877,10 @@
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="handwriting"]::before {
     content: 'Manual';
     font-family: 'Caveat', cursive;
+}
+
+/* Estado de guardado sutil */
+#saveStatus {
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }

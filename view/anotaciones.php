@@ -85,6 +85,15 @@ if(!isset($_SESSION['usuario'])){
                         <input type="hidden" id="noteId"> <!-- Campo oculto para ID -->
                         <input type="text" class="form-control border-0 shadow-none bg-transparent fw-bold fs-5 p-0 text-truncate" id="noteTitle" placeholder="Título del documento">
                     </div>
+                    <div class="dropdown d-inline-block me-2">
+                        <button class="btn btn-link text-secondary" type="button" id="dropdownExport" data-bs-toggle="dropdown" aria-expanded="false" title="Exportar">
+                            <i class="fas fa-download fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow" aria-labelledby="dropdownExport">
+                            <li><a class="dropdown-item" href="#" id="btnExportPdf"><i class="fas fa-file-pdf me-2 text-danger"></i>Exportar a PDF</a></li>
+                            <li><a class="dropdown-item" href="#" id="btnExportWord"><i class="fas fa-file-word me-2 text-primary"></i>Exportar a Word</a></li>
+                        </ul>
+                    </div>
                     <button type="button" class="btn-close d-none d-md-block ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -103,10 +112,6 @@ if(!isset($_SESSION['usuario'])){
 
                         <!-- Panel de Acciones -->
                         <div class="p-3 d-flex flex-column gap-3" id="actions-panel">
-                            <button type="button" class="btn btn-primary w-100 rounded-pill fw-bold py-2" id="btnAddNote">
-                                <i class="fas fa-save me-2"></i> Guardar Nota
-                            </button>
-                            
                             <div class="d-flex gap-2">
                                 <select class="form-select border flex-grow-1" id="noteMateria" style="cursor: pointer;">
                                     <option value="">Sin materia</option>
@@ -137,10 +142,45 @@ if(!isset($_SESSION['usuario'])){
         </div>
     </div>
 
+    <!-- Modal Eliminar Nota -->
+    <div class="modal fade" id="modalEliminarNota" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que quieres eliminar esta nota?</p>
+                    <p class="text-danger small"><strong>Atención:</strong> Esta acción no se puede deshacer.</p>
+                    <input type="hidden" id="idNotaEliminar">
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarEliminarNota">Sí, eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-info-circle me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Quill Editor JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <!-- html2pdf JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <!-- JS Específico -->
     <script src="../assets/js/anotaciones.js"></script>
@@ -167,6 +207,8 @@ if(!isset($_SESSION['usuario'])){
                         '.ql-link': 'Insertar enlace',
                         '.ql-image': 'Insertar imagen',
                         '.ql-clean': 'Limpiar formato',
+                        '.ql-undo': 'Deshacer',
+                        '.ql-redo': 'Rehacer',
                         '.ql-color': 'Color de texto',
                         '.ql-background': 'Color de fondo',
                         '.ql-align': 'Alineación',
