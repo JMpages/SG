@@ -86,38 +86,185 @@ if(!isset($_SESSION['usuario'])){
                         <input type="text" class="form-control border-0 shadow-none bg-transparent fw-bold fs-5 p-0 text-truncate" id="noteTitle" placeholder="Título del documento">
                     </div>
 
+                    <div class="d-flex align-items-center gap-1 me-2">
+                        <button type="button" class="btn btn-sm text-muted" id="btnUndo" title="Deshacer (Ctrl+Z)"><i class="fas fa-undo"></i></button>
+                        <button type="button" class="btn btn-sm text-muted" id="btnRedo" title="Rehacer (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+                    </div>
+
                     <button type="button" class="btn-close d-none d-md-block ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Body: Espacio de Trabajo -->
-                <div class="modal-body p-0 d-flex" id="modalBodyContent" style="background-color: var(--bg-body);">
+                <div class="modal-body p-0 d-flex flex-column flex-md-row" id="modalBodyContent" style="background-color: var(--bg-body);">
                     
-                    <!-- Barra Lateral de Herramientas (Izquierda en Escritorio, Abajo en Móvil) -->
+                    <!-- Barra Lateral Estilo Canva (Nav + Paneles) -->
                     <div id="tools-sidebar" class="d-flex flex-column">
+                        <div class="d-flex h-100 flex-column flex-md-row">
+                            
+                            <!-- 1. Menú de Iconos (Izquierda) -->
+                            <div id="sidebar-nav" class="d-flex flex-row flex-md-column align-items-center py-0 py-md-3 gap-0 gap-md-3 z-1">
+                                <button class="btn btn-nav-icon active" data-tab="estilo" title="Estilo">
+                                    <i class="fas fa-font"></i>
+                                    <span class="d-none d-md-block small mt-1">Estilo</span>
+                                </button>
+                                <button class="btn btn-nav-icon" data-tab="draw" title="Dibujo">
+                                    <i class="fas fa-pen-fancy"></i>
+                                    <span class="d-none d-md-block small mt-1">Dibujo</span>
+                                </button>
 
-                        <div class="sidebar-card d-flex flex-column flex-grow-1 position-relative">
-                        
-                        <!-- Botón Toggle Integrado (Solo Móvil) -->
-                        <button id="mobile-toolbar-toggle" class="btn btn-light d-md-none d-flex align-items-center justify-content-center" type="button">
-                            <i class="fas fa-chevron-up"></i>
-                        </button>
+                                <!-- Acciones MÓVIL (Materia y PDF) - Solo visibles en d-md-none -->
+                                <div class="btn-nav-icon mt-md-auto pt-md-3 border-top-md position-relative d-md-none">
+                                    <select class="form-select form-select-sm border-0 bg-transparent text-muted p-0 text-center w-100 h-100" id="noteMateriaMobile" style="cursor: pointer;" title="Materia">
+                                        <option value="">&#xf02d;</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="button" class="btn btn-nav-icon text-danger d-md-none" id="btnDownloadPdfMobile" title="Descargar PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                            </div>
 
-                        <!-- Panel de Acciones -->
-                        <div class="p-3 d-flex align-items-center gap-2" id="actions-panel">
-                            <select class="form-select border flex-grow-1" id="noteMateria" style="cursor: pointer;">
-                                <option value="">Sin materia</option>
-                            </select>
-                            <button class="btn btn-outline-danger" id="btnDownloadPdf" title="Descargar como PDF">
-                                <i class="fas fa-file-pdf"></i> <i class="fas fa-download fa-xs"></i>
-                            </button>
-                        </div>
+                            <!-- 2. Contenido de Paneles (Derecha del menú) -->
+                            <div id="sidebar-content" class="flex-grow-1 bg-light border-end position-relative d-flex flex-column">
+                                
+                                <!-- Botón Toggle Móvil -->
+                                <button id="mobile-toolbar-toggle" class="btn btn-light d-md-none position-absolute top-0 end-0 m-2 z-3" type="button">
+                                    <i class="fas fa-chevron-up"></i>
+                                </button>
 
-                        <!-- Contenedor de la Barra de Herramientas Quill -->
-                        <div id="toolbar-sticky-container" class="flex-grow-1 overflow-y-auto border-top">
-                            <!-- La barra de herramientas de Quill se moverá aquí con JS -->
+                                <!-- PANEL EDICIÓN (Inicio e Insertar comparten este contenedor para Quill) -->
+                                <div id="panel-edicion" class="sidebar-panel h-100 d-flex flex-column">
+                                    
+                                    <!-- Acciones ESCRITORIO (Materia y PDF) - Restaurado -->
+                                    <div class="p-3 d-none d-md-flex align-items-center gap-2 border-bottom bg-light" id="actions-panel">
+                                        <select class="form-select form-select-sm border w-100" id="noteMateria" style="cursor: pointer;">
+                                            <option value="">Sin materia</option>
+                                        </select>
+                                        <button class="btn btn-outline-danger" id="btnDownloadPdf" title="Descargar PDF">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Toolbar Quill Personalizado (Definido manualmente para separar pestañas) -->
+                                    <div id="toolbar-sticky-container" class="flex-grow-1 overflow-y-auto bg-light">
+                                        <div id="custom-toolbar">
+                                            
+                                            <!-- SECCIÓN INICIO (Formato de Texto) -->
+                                            <div id="toolbar-estilo" class="toolbar-section p-0">
+                                                <div class="d-flex flex-wrap gap-1 align-items-center justify-content-start w-100">
+                                                    
+                                                    <!-- === VISTA ESCRITORIO (Original) === -->
+                                                    <span class="ql-formats me-1 d-none d-md-flex align-items-center">
+                                                        <select class="ql-font" title="Fuente" style="width: 130px;"></select>
+                                                        <select class="ql-size" title="Tamaño de fuente">
+                                                            <option value="10px">10</option><option value="12px" selected>12</option><option value="14px">14</option><option value="16px">16</option><option value="18px">18</option><option value="20px">20</option><option value="24px">24</option><option value="32px">32</option>
+                                                        </select>
+                                                    </span>
+                                                    <span class="ql-formats d-none d-md-flex gap-1 align-items-center me-1">
+                                                        <button class="ql-bold" title="Negrita"></button>
+                                                        <button class="ql-italic" title="Cursiva"></button>
+                                                        <button class="ql-underline" title="Subrayado"></button>
+                                                        <select class="ql-color" title="Color de texto"></select>
+                                                    </span>
+                                                    <span class="ql-formats d-none d-md-flex gap-1 align-items-center me-1">
+                                                        <select class="ql-align" title="Alineación"></select>
+                                                        <select class="ql-list" title="Listas">
+                                                            <option value="ordered"></option>
+                                                            <option value="bullet"></option>
+                                                            <option selected></option>
+                                                        </select>
+                                                    </span>
+                                                    <span class="ql-formats d-none d-md-flex gap-1 align-items-center flex-wrap">
+                                                        <select class="ql-background" title="Color de fondo"></select>
+                                                        <button class="ql-indent" value="-1" title="Disminuir sangría"></button>
+                                                        <button class="ql-indent" value="+1" title="Aumentar sangría"></button>
+                                                        <button class="ql-strike" title="Tachado"></button>
+                                                        <button class="ql-clean" title="Limpiar formato"></button>
+                                                    </span>
+
+                                                    <!-- === VISTA MÓVIL (Independiente) === -->
+                                                    <!-- Fila 1: Prioridad (Siempre visible) -->
+                                                    <span class="ql-formats d-flex d-md-none gap-1 align-items-center flex-wrap justify-content-center w-100">
+                                                        <select class="ql-size" title="Tamaño">
+                                                            <option value="10px">10</option><option value="12px" selected>12</option><option value="14px">14</option><option value="16px">16</option><option value="18px">18</option><option value="20px">20</option><option value="24px">24</option><option value="32px">32</option>
+                                                        </select>
+                                                        <button class="ql-bold" title="Negrita"></button>
+                                                        <button class="ql-italic" title="Cursiva"></button>
+                                                        <button class="ql-underline" title="Subrayado"></button>
+                                                        <select class="ql-color" title="Color"></select>
+                                                    </span>
+                                                    
+                                                    <!-- Fila 2: Expandido (Visible al desplegar) -->
+                                                    <div class="ql-formats d-flex d-md-none flex-column gap-1 align-items-center w-100 mobile-expanded-group">
+                                                        <!-- Sub-fila 1: Fuente + Estilos extra -->
+                                                        <div class="d-flex gap-1 justify-content-center w-100">
+                                                            <select class="ql-font" title="Fuente" style="flex-grow: 1; max-width: 200px;"></select>
+                                                            <button class="ql-strike" title="Tachado"></button>
+                                                            <select class="ql-background" title="Fondo"></select>
+                                                        </div>
+                                                        <!-- Sub-fila 2: Párrafo y Acciones -->
+                                                        <div class="d-flex gap-1 justify-content-center w-100">
+                                                            <select class="ql-align" title="Alineación"></select>
+                                                            <select class="ql-list" title="Listas">
+                                                                <option value="ordered"></option>
+                                                                <option value="bullet"></option>
+                                                                <option selected></option>
+                                                            </select>
+                                                            <button class="ql-indent" value="-1" title="Disminuir sangría"></button>
+                                                            <button class="ql-indent" value="+1" title="Aumentar sangría"></button>
+                                                            <button class="ql-clean" title="Limpiar"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- PANEL DIBUJO -->
+                                <div id="panel-draw" class="sidebar-panel h-100 d-none flex-column">
+                                    <div class="p-3 d-flex flex-column gap-3 overflow-y-auto">
+                                        <div>
+                                            <label class="small text-muted fw-bold mb-2">Color del trazo</label>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <input type="radio" class="btn-check" name="penColor" id="pColorBlack" value="black" checked>
+                                                <label class="btn btn-outline-dark btn-sm rounded-circle p-2" for="pColorBlack" style="width: 32px; height: 32px; background-color: black;"></label>
+                                                
+                                                <input type="radio" class="btn-check" name="penColor" id="pColorBlue" value="#0d6efd">
+                                                <label class="btn btn-outline-primary btn-sm rounded-circle p-2" for="pColorBlue" style="width: 32px; height: 32px; background-color: #0d6efd; border-color: #0d6efd;"></label>
+                                                
+                                                <input type="radio" class="btn-check" name="penColor" id="pColorRed" value="#dc3545">
+                                                <label class="btn btn-outline-danger btn-sm rounded-circle p-2" for="pColorRed" style="width: 32px; height: 32px; background-color: #dc3545; border-color: #dc3545;"></label>
+                                                
+                                                <input type="radio" class="btn-check" name="penColor" id="pColorGreen" value="#198754">
+                                                <label class="btn btn-outline-success btn-sm rounded-circle p-2" for="pColorGreen" style="width: 32px; height: 32px; background-color: #198754; border-color: #198754;"></label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="small text-muted fw-bold mb-2">Grosor</label>
+                                            <input type="range" class="form-range" id="penWidth" min="1" max="5" step="0.5" value="2">
+                                        </div>
+
+                                        <hr class="my-1">
+
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" id="btnInsertDrawing">
+                                                <i class="fas fa-check me-2"></i>Insertar Dibujo
+                                            </button>
+                                            <button class="btn btn-outline-secondary" id="btnClearCanvas">
+                                                <i class="fas fa-eraser me-2"></i>Limpiar Lienzo
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="alert alert-info small mt-2 mb-0">
+                                            <i class="fas fa-info-circle me-1"></i> Dibuja sobre la hoja y pulsa "Insertar" para fijarlo como imagen.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         </div>
-                    </div>
 
                     <!-- Contenedor Principal (Toolbar + Editor) -->
                     <div class="d-flex flex-column flex-grow-1" style="min-width: 0; min-height: 0;">
@@ -125,8 +272,10 @@ if(!isset($_SESSION['usuario'])){
                     <!-- Área de Scroll (Fondo Gris) -->
                     <div class="flex-grow-1 overflow-y-auto" id="editor-scroll-area">
                         <!-- La "Hoja" de Papel -->
-                        <div id="editor-page" class="bg-white shadow-sm mx-auto" style="position: relative;">
+                        <div id="editor-page" class="bg-white shadow-sm mx-auto position-relative">
                             <div id="editor-container"></div>
+                            <!-- Canvas Superpuesto -->
+                            <canvas id="drawing-canvas"></canvas>
                         </div>
                     </div>
                     </div>
@@ -172,69 +321,12 @@ if(!isset($_SESSION['usuario'])){
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Quill Editor JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <!-- Signature Pad (Escritura a mano) -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <!-- HTML2PDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <!-- JS Específico -->
     <script src="../assets/js/anotaciones.js"></script>
-
-    <!-- Script para Tooltips en la barra de herramientas -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Observador para detectar cuando Quill genera la barra de herramientas
-            const observer = new MutationObserver((mutations, obs) => {
-                const toolbar = document.querySelector('.ql-toolbar');
-                if (toolbar) {
-                    // Definición de tooltips para cada botón
-                    const tooltips = {
-                        '.ql-bold': 'Negrita',
-                        '.ql-italic': 'Cursiva',
-                        '.ql-underline': 'Subrayado',
-                        '.ql-strike': 'Tachado',
-                        '.ql-blockquote': 'Cita',
-                        '.ql-code-block': 'Bloque de código',
-                        '.ql-list[value="ordered"]': 'Lista numerada',
-                        '.ql-list[value="bullet"]': 'Lista con viñetas',
-                        '.ql-indent[value="-1"]': 'Disminuir sangría',
-                        '.ql-indent[value="+1"]': 'Aumentar sangría',
-                        '.ql-link': 'Insertar enlace',
-                        '.ql-image': 'Insertar imagen',
-                        '.ql-clean': 'Limpiar formato',
-                        '.ql-undo': 'Deshacer',
-                        '.ql-redo': 'Rehacer',
-                        '.ql-color': 'Color de texto',
-                        '.ql-background': 'Color de fondo',
-                        '.ql-align': 'Alineación',
-                        '.ql-header': 'Estilo de encabezado'
-                    };
-
-                    for (const [selector, title] of Object.entries(tooltips)) {
-                        toolbar.querySelectorAll(selector).forEach(el => {
-                            // Configuración avanzada del tooltip
-                            const tooltip = new bootstrap.Tooltip(el, {
-                                title: title,
-                                placement: 'bottom',
-                                trigger: 'hover' // IMPORTANTE: Solo hover, evita que se quede al hacer click (focus)
-                            });
-                            
-                            // 1. Ocultar al hacer click
-                            el.addEventListener('click', () => {
-                                tooltip.hide();
-                            });
-
-                            // 2. PREVENIR que aparezca si el menú desplegable está abierto (clase ql-expanded)
-                            el.addEventListener('show.bs.tooltip', function(e) {
-                                if (this.classList.contains('ql-expanded')) {
-                                    e.preventDefault(); // Cancela la aparición del tooltip
-                                }
-                            });
-                        });
-                    }
-                    obs.disconnect(); // Detener observación una vez aplicados
-                }
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-        });
-    </script>
 </body>
 </html>

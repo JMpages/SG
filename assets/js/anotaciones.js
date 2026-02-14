@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveStatus = document.getElementById('saveStatus');
     const colorOptions = document.querySelectorAll('.color-option');
     const selectMateria = document.getElementById('noteMateria');
+    const selectMateriaMobile = document.getElementById('noteMateriaMobile');
     const modalNota = document.getElementById('modalNota');
     const filterMateria = document.getElementById('filterMateria');
     const filterDate = document.getElementById('filterDate');
     const btnClearFilters = document.getElementById('btnClearFilters');
     const btnDownloadPdf = document.getElementById('btnDownloadPdf');
+    const btnDownloadPdfMobile = document.getElementById('btnDownloadPdfMobile');
     const modalInstance = new bootstrap.Modal(modalNota);
     const modalEliminar = new bootstrap.Modal(document.getElementById('modalEliminarNota'));
     const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminarNota');
@@ -19,17 +21,20 @@ document.addEventListener('DOMContentLoaded', function() {
     let quill;
     let isSaving = false; // Flag para evitar guardados concurrentes
     let savePending = false; // Flag para encolar cambios pendientes
+    let signaturePad; // Instancia de escritura a mano
 
     // 1. Inicialización
     initQuill();
     cargarMaterias();
     setupSearchAndFilter();
+    initDrawing(); // Inicializar lógica de dibujo
     // Cargar notas desde el backend
     cargarNotasBackend();
     setupMobileToolbar(); // Inicializar lógica móvil
 
     // Listener para PDF
     if(btnDownloadPdf) btnDownloadPdf.addEventListener('click', descargarPDF);
+    if(btnDownloadPdfMobile) btnDownloadPdfMobile.addEventListener('click', descargarPDF);
 
     function initQuill() {
         // 1. Configurar Tamaños de Fuente Numéricos
@@ -47,30 +52,51 @@ document.addEventListener('DOMContentLoaded', function() {
                     userOnly: true
                 },
                 toolbar: {
-                    container: [
-                        // FILA 1: Esenciales (Visibles siempre en móvil)
-                        ['undo', 'redo'], // Deshacer y Rehacer (Prioridad alta)
-                        [{ 'size': Size.whitelist }, 'bold', 'italic', { 'color': [] }, { 'list': 'bullet' }],
-                        
-                        // FILAS SIGUIENTES (Visibles al desplegar)
-                        ['underline', { 'list': 'ordered' }, { 'align': [] }], // Alineación y otros
-                        [{ 'header': [1, 2, 3, false] }, { 'font': [] }], // Encabezado y Fuente
-                        ['strike', { 'background': [] }, { 'indent': '-1'}, { 'indent': '+1' }], // Extras formato
-                        ['link', 'image', 'blockquote', 'code-block', 'clean'] // Insertar y limpiar
-                    ],
+                    container: '#custom-toolbar', // Usar el contenedor HTML manual
                     handlers: {
-                        'undo': function() { this.quill.history.undo(); },
-                        'redo': function() { this.quill.history.redo(); }
                     }
                 }
             }
         });
 
-        // Inyectar iconos SVG para Deshacer/Rehacer (Quill no los incluye por defecto en toolbar custom)
-        const undoBtn = document.querySelector('.ql-undo');
-        const redoBtn = document.querySelector('.ql-redo');
-        if (undoBtn) undoBtn.innerHTML = '<svg viewbox="0 0 18 18"><polygon class="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10"></polygon><path class="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"></path></svg>';
-        if (redoBtn) redoBtn.innerHTML = '<svg viewbox="0 0 18 18"><polygon class="ql-fill ql-stroke" points="12 10 14 12 16 10 12 10"></polygon><path class="ql-stroke" d="M9.91,13.91A4.6,4.6,0,0,1,9,14a5,5,0,1,1,5-5"></path></svg>';
+        // 2. Inicializar Tooltips de Bootstrap para la barra de herramientas
+        // Usamos setTimeout para asegurar que el DOM de Quill esté listo
+        setTimeout(() => {
+            const toolbar = document.querySelector('.ql-toolbar');
+            if (toolbar) {
+                const tooltipsMap = {
+                    '.ql-bold': 'Negrita',
+                    '.ql-italic': 'Cursiva',
+                    '.ql-underline': 'Subrayado',
+                    '.ql-strike': 'Tachado',
+                    '.ql-clean': 'Limpiar formato',
+                    '.ql-list': 'Listas', // Selectores genéricos funcionan para botones y pickers
+                    '.ql-align': 'Alineación',
+                    '.ql-color': 'Color de texto',
+                    '.ql-background': 'Color de fondo',
+                    '.ql-indent[value="-1"]': 'Disminuir sangría',
+                    '.ql-indent[value="+1"]': 'Aumentar sangría',
+                    '.ql-font': 'Fuente',
+                    '.ql-size': 'Tamaño'
+                };
+
+                for (const [selector, title] of Object.entries(tooltipsMap)) {
+                    // Buscamos tanto botones directos como contenedores de pickers (.ql-picker.ql-list)
+                    const elements = toolbar.querySelectorAll(selector + ', .ql-picker' + selector);
+                    elements.forEach(el => {
+                        const tooltip = new bootstrap.Tooltip(el, { 
+                            title: title, 
+                            trigger: 'hover', // Usar hover nativo (excluye focus para evitar que se pegue al clic)
+                            container: 'body', // Evita problemas de z-index/corte
+                            placement: () => window.innerWidth < 768 ? 'bottom' : 'top' // Dirección opuesta a las opciones
+                        });
+                        
+                        // Asegurar que se oculte inmediatamente al hacer clic
+                        el.addEventListener('click', () => tooltip.hide());
+                    });
+                }
+            }
+        }, 100);
 
         // Listener para cambios en el editor (Autoguardado)
         quill.on('text-change', function(delta, oldDelta, source) {
@@ -80,11 +106,124 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Mover la barra de herramientas generada por Quill al contenedor superior
-        const toolbar = document.querySelector('.ql-toolbar');
-        const stickyContainer = document.getElementById('toolbar-sticky-container');
-        if (toolbar && stickyContainer) {
-            stickyContainer.appendChild(toolbar);
+        // Listeners para botones de Deshacer/Rehacer en el header
+        const btnUndo = document.getElementById('btnUndo');
+        const btnRedo = document.getElementById('btnRedo');
+        
+        if(btnUndo) btnUndo.addEventListener('click', () => quill.history.undo());
+        if(btnRedo) btnRedo.addEventListener('click', () => quill.history.redo());
+    }
+
+    // 1.1 Lógica de Escritura a Mano
+    function initDrawing() {
+        const canvas = document.getElementById('drawing-canvas');
+        const editorPage = document.getElementById('editor-page');
+        
+        if(!canvas || !editorPage) return;
+
+        // Inicializar SignaturePad
+        signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgba(255, 255, 255, 0)', // Transparente para ver las líneas de fondo CSS
+            penColor: 'black',
+            minWidth: 0.5,
+            maxWidth: 2,
+            throttle: 16 // Mejora rendimiento en móviles
+        });
+
+        // Ajustar tamaño del canvas al abrir el modal y al redimensionar
+        modalNota.addEventListener('shown.bs.modal', function () {
+            resizeCanvas();
+        });
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- PESTAÑAS (TEXTO vs DIBUJO) ---
+        const tabButtons = document.querySelectorAll('.btn-nav-icon');
+        const panelEdicion = document.getElementById('panel-edicion');
+        const toolbarEstilo = document.getElementById('toolbar-estilo');
+        const panelDraw = document.getElementById('panel-draw');
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Activar botón
+                tabButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const mode = this.dataset.tab;
+                
+                if (mode === 'estilo') {
+                    panelEdicion.classList.remove('d-none');
+                    panelDraw.classList.add('d-none');
+                    editorPage.classList.remove('drawing-mode');
+                } else if (mode === 'draw') {
+                    panelEdicion.classList.add('d-none');
+                    panelDraw.classList.remove('d-none');
+                    editorPage.classList.add('drawing-mode'); // Activa canvas
+                    resizeCanvas(); // Asegurar tamaño correcto
+                }
+            });
+        });
+
+        // --- HERRAMIENTAS DE DIBUJO ---
+        
+        // Insertar Dibujo
+        document.getElementById('btnInsertDrawing').addEventListener('click', () => {
+            if (signaturePad.isEmpty()) {
+                showToast('El lienzo está vacío', 'warning');
+                return;
+            }
+            // Convertir a imagen
+            const data = signaturePad.toDataURL('image/png');
+            
+            // Insertar en Quill
+            const range = quill.getSelection(true);
+            const index = range ? range.index : quill.getLength();
+            quill.insertEmbed(index, 'image', data);
+            quill.setSelection(index + 1);
+            
+            // Limpiar y volver a modo texto (opcional, o quedarse en dibujo)
+            signaturePad.clear();
+            showToast('Dibujo insertado', 'success');
+        });
+
+        // Botón Borrar
+        document.getElementById('btnClearCanvas').addEventListener('click', () => {
+            signaturePad.clear();
+        });
+
+        // Selector de Color
+        document.querySelectorAll('input[name="penColor"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                signaturePad.penColor = e.target.value;
+            });
+        });
+
+        // Selector de Grosor
+        document.getElementById('penWidth').addEventListener('input', (e) => {
+            const width = parseFloat(e.target.value);
+            signaturePad.minWidth = width * 0.5;
+            signaturePad.maxWidth = width;
+        });
+    }
+
+    function resizeCanvas() {
+        const canvas = document.getElementById('drawing-canvas');
+        const editorPage = document.getElementById('editor-page');
+        
+        if(canvas && editorPage) {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            
+            // Guardar contenido actual
+            const data = signaturePad.toData();
+            
+            // Ajustar dimensiones físicas y de dibujo
+            // El canvas debe cubrir todo el editor page
+            canvas.width = editorPage.offsetWidth * ratio;
+            canvas.height = editorPage.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+            
+            // Restaurar contenido (SignaturePad limpia al cambiar dimensiones)
+            signaturePad.clear();
+            signaturePad.fromData(data);
         }
     }
 
@@ -169,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('noteTitle').value = '';
         quill.setContents([]);
         selectMateria.value = '';
+        if(selectMateriaMobile) selectMateriaMobile.value = '';
         selectedColor = 'white';
         updateColorSelection();
         if(saveStatus) saveStatus.innerHTML = '';
@@ -235,10 +375,16 @@ document.addEventListener('DOMContentLoaded', function() {
         debouncedSave();
     });
 
-    selectMateria.addEventListener('change', () => {
+    // Sincronizar selectores de materia (Escritorio <-> Móvil)
+    function handleMateriaChange(e) {
+        const val = e.target.value;
+        if(selectMateria && selectMateria !== e.target) selectMateria.value = val;
+        if(selectMateriaMobile && selectMateriaMobile !== e.target) selectMateriaMobile.value = val;
         mostrarEstadoGuardando();
         debouncedSave();
-    });
+    }
+    if(selectMateria) selectMateria.addEventListener('change', handleMateriaChange);
+    if(selectMateriaMobile) selectMateriaMobile.addEventListener('change', handleMateriaChange);
 
     function mostrarEstadoGuardando() {
         // El guardado es automático, solo se notificarán errores.
@@ -249,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const title = document.getElementById('noteTitle').value.trim();
         const contentHtml = quill.root.innerHTML;
         const contentText = quill.getText(); // Texto plano para búsquedas
-        const materiaId = selectMateria.value;
+        const materiaId = selectMateria ? selectMateria.value : (selectMateriaMobile ? selectMateriaMobile.value : '');
 
         // Validación: No guardar notas vacías nuevas
         if (!id && !contentText.trim() && !title) {
@@ -318,17 +464,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 materiasCache = result.data;
                 
                 // Llenar select del formulario
-                let options = '<option value="">Sin materia (General)</option>';
+                let options = '<option value="">Sin materia</option>';
+                let optionsMobile = '<option value="">&#xf02d;</option>'; // Icono para móvil
                 let filterOptions = '<option value="all">Todas</option>';
                 
                 materiasCache.forEach(m => {
                     if(m.activa == 1) {
                         options += `<option value="${m.id}">${m.nombre}</option>`;
+                        optionsMobile += `<option value="${m.id}">${m.nombre}</option>`;
                         filterOptions += `<option value="${m.id}">${m.nombre}</option>`;
                     }
                 });
                 
-                selectMateria.innerHTML = options;
+                if(selectMateria) selectMateria.innerHTML = options;
+                if(selectMateriaMobile) selectMateriaMobile.innerHTML = optionsMobile;
                 filterMateria.innerHTML = filterOptions;
             }
         } catch (e) {
@@ -549,6 +698,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('noteTitle').value = nota.titulo;
         quill.root.innerHTML = nota.contenido; // Cargar HTML en Quill
         selectMateria.value = nota.materia_id || '';
+        if(selectMateriaMobile) selectMateriaMobile.value = nota.materia_id || '';
         selectedColor = nota.color || 'white';
         
         updateColorSelection();
