@@ -1,7 +1,7 @@
 <?php
 // Configuración y Autologin
 require_once 'backend/config/config.php';
-require_once 'backend/autologin.php';
+require_once 'backend/auth/autologin.php';
 
 ?>
 <!DOCTYPE html>
@@ -21,31 +21,31 @@ require_once 'backend/autologin.php';
 </head>
 <body>
     <!-- Navbar -->
-    <?php include 'components/navbar.php'; ?>
+    <?php include 'pages/components/navbar.php'; ?>
 
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <div class="mb-4">
+                    <div class="mb-4 text-center">
                         <i class="fas fa-graduation-cap fa-4x" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
                     </div>
-                    <h1 class="display-4 fw-bold mb-4" style="color: var(--text-primary);">Tus notas, bajo control</h1>
+                    <h1 class="display-4 fw-bold mb-4 text-center" style="color: var(--text-primary);">Tus notas, bajo control</h1>
                     <p class="lead mb-5" style="color: var(--text-secondary);">
                         La herramienta definitiva para estudiantes. Gestiona tus materias, organiza tus tareas y simula tus calificaciones para alcanzar tus metas académicas.
                     </p>
                     
                     <div class="d-flex gap-3 justify-content-center flex-wrap">
                         <?php if(isset($_SESSION['usuario'])): ?>
-                            <a href="view/dashboard.php" class="btn btn-primary btn-lg px-5 shadow-lg">
+                            <a href="pages/dashboard.php" class="btn btn-primary btn-lg px-5 shadow-lg">
                                 <i class="fas fa-tachometer-alt me-2"></i>Ir a mi Dashboard
                             </a>
                         <?php else: ?>
-                            <a href="view/login.php" class="btn btn-primary btn-lg px-4 shadow-lg">
+                            <a href="pages/login.php" class="btn btn-primary btn-lg px-4 shadow-lg">
                                 <i class="fas fa-sign-in-alt me-2"></i>Comenzar Ahora
                             </a>
-                            <a href="view/registro.php" class="btn btn-outline-secondary btn-lg px-4" style="border-color: var(--border-color); color: var(--text-primary);">
+                            <a href="pages/registro.php" class="btn btn-outline-secondary btn-lg px-4" style="border-color: var(--border-color); color: var(--text-primary);">
                                 Crear Cuenta
                             </a>
                         <?php endif; ?>
@@ -75,9 +75,9 @@ require_once 'backend/autologin.php';
                         <div class="feature-icon">
                             <i class="fas fa-calculator"></i>
                         </div>
-                        <h3 class="h4 mb-3" style="color: var(--text-primary);">Simulador de Notas</h3>
+                        <h3 class="h4 mb-3" style="color: var(--text-primary);">Registro de Notas</h3>
                         <p style="color: var(--text-secondary);">
-                            ¿Cuánto necesitas sacar en el final? Simula calificaciones futuras sin afectar tus datos reales y planifica tu éxito.
+                            ¿Cuánto necesitas sacar en el final? registra tus calificaciones y planifica tu éxito.
                         </p>
                     </div>
                 </div>
@@ -142,11 +142,11 @@ require_once 'backend/autologin.php';
                     <p class="mb-4">No dejes que el caos controle tu semestre. Domina tus números.</p>
                     
                     <?php if(!isset($_SESSION['usuario'])): ?>
-                        <a href="view/registro.php" class="btn btn-light btn-lg px-4 fw-bold text-primary shadow">
+                        <a href="pages/registro.php" class="btn btn-light btn-lg px-4 fw-bold text-primary shadow">
                             <i class="fas fa-rocket me-2"></i>Despegar Ahora
                         </a>
                     <?php else: ?>
-                        <a href="view/dashboard.php" class="btn btn-light btn-lg px-4 fw-bold text-primary shadow">
+                        <a href="pages/dashboard.php" class="btn btn-light btn-lg px-4 fw-bold text-primary shadow">
                             <i class="fas fa-rocket me-2"></i>Ir al Panel
                         </a>
                     <?php endif; ?>

@@ -12,13 +12,23 @@
 .anotaciones-header h1 {
     margin: 0;
     font-weight: 700;
-    font-size: 2rem;
+    font-size: 1.75rem;
 }
 
 .anotaciones-header p {
-    margin: 0.5rem 0 0 0;
-    opacity: 0.9;
-    font-size: 0.95rem;
+    margin: 0.25rem 0 0 0;
+    opacity: 0.85;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 576px) {
+    .anotaciones-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .anotaciones-header h1 {
+        font-size: 1.4rem;
+    }
 }
 
 /* Entrada de Nota Rápida */
@@ -153,7 +163,7 @@
 }
 
 .note-card {
-    background-color: var(--secondary-color);
+    background-color: var(--secondary-color); /* Asegúrate que esta variable esté definida en tu style.css principal */
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
     padding: 1rem;
@@ -162,6 +172,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    cursor: pointer; /* El cursor siempre será pointer para abrir o seleccionar */
     aspect-ratio: 1 / 1;
 }
 
@@ -314,103 +325,104 @@
     opacity: 0.8;
 }
 
-/* Barra de Filtros Custom */
-.filter-bar-custom {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--border-color);
-    padding: 0.35rem 0.5rem;
-    border-radius: 50rem; /* Restaurar estilo redondeado completo */
+/* Barra de Filtros Premium (Glassmorphism) */
+.filter-bar-premium {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0;
+    border-radius: 0.5rem;
     display: flex;
-    flex-wrap: nowrap; /* Forzar una sola línea */
     align-items: center;
-    gap: 0.5rem;
-    max-width: 100%;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    height: 35px;
+    overflow: hidden;
 }
 
-.filter-bar-custom select,
-.filter-bar-custom input {
-    color: var(--text-primary);
-    padding: 0.6rem 2.5rem 0.6rem 1rem !important; /* Más espacio y hueco para la flecha */
-    font-size: 0.95rem;
+.select-filter-custom {
+    background-color: transparent !important;
+    color: white !important;
     border: none !important;
-    border-radius: 0.5rem;
-    background-color: transparent;
-    transition: all 0.2s ease;
-    /* Custom arrow to prevent overlap */
+    border-radius: 0 !important;
+    padding: 0.4rem 0.5rem 0.4rem 1.6rem !important;
+    font-weight: 500 !important;
+    font-size: 0.75rem !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    height: 100% !important;
     appearance: none;
     -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23555' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
     background-repeat: no-repeat !important;
-    background-position: right 1rem center !important;
-    background-size: 16px 12px !important;
+    background-position: right 0.5rem center !important;
+    background-size: 8px 6px !important;
+    /* Ajustes para truncar texto largo */
+    width: 100%;
+    text-overflow: ellipsis;
 }
 
-.filter-bar-custom select {
-    min-width: 100px; /* Reducido para evitar rigidez, flex-grow lo expandirá */
-    flex-grow: 1;
+.select-filter-custom option {
+    background-color: #333 !important;
+    color: white !important;
 }
 
-.filter-bar-custom select option {
-    background-color: var(--secondary-color);
-    color: var(--text-primary);
+/* El input date no necesita el chevron del select */
+.date-filter-custom {
+    padding-left: 0.5rem !important;
+    background-image: none !important;
 }
 
-.filter-bar-custom input[type="date"] {
-    width: auto;
-    background-image: none; /* El input date tiene su propio indicador */
-    padding-right: 1rem !important;
-    min-height: 38px; /* Altura mínima para touch targets */
-    color: var(--text-primary); /* Asegurar color explícito */
+/* Icono superpuesto para Materia */
+.filter-icon-overlay {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.85);
+    pointer-events: none;
+    font-size: 0.7rem;
+    z-index: 5;
 }
 
-.btn-filter-clear {
-    color: var(--text-muted);
-    background-color: rgba(0,0,0,0.05);
+.btn-filter-clear-premium {
+    background-color: rgba(255, 255, 255, 0.1);
     border: none;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    height: 100%;
+    width: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    flex-shrink: 0;
+    border-radius: 0;
 }
 
-.btn-filter-clear:hover {
-    background-color: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
+.btn-filter-clear-premium:hover {
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
-.filter-bar-custom .vr {
-    height: 24px;
-    opacity: 0.25;
-    flex-shrink: 0;
+.date-filter-custom::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
 }
 
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    .filter-bar-custom {
-        width: 100%;
-        padding: 0.25rem 0.5rem;
-        gap: 0.25rem;
+@media (max-width: 576px) {
+    .filter-bar-premium {
+        max-width: 100%;
     }
-    /* Reducir anchos mínimos en móvil para que quepan mejor en la barra */
-    .filter-bar-custom select {
-        min-width: 0; /* CRUCIAL: Permite que el texto se corte (...) si no cabe */
-        font-size: 0.9rem;
-        padding-right: 1.5rem !important;
-        background-position: right 0.5rem center;
+    /* En móvil: forzamos ancho 0 para que flex-grow reparta el espacio 50/50 */
+    .filter-wrapper {
+        min-width: 0;
+        width: 0;
     }
-    .filter-bar-custom input[type="date"] {
-        font-size: 0.9rem;
-        max-width: 140px; /* Aumentado para que quepa el placeholder mm/dd/aaaa */
-        padding-left: 0.5rem !important;
-    }
-    .btn-filter-clear {
-        width: 36px;
-        height: 36px;
+}
+
+@media (min-width: 577px) {
+    /* En PC: el ancho depende del contenido, con un mínimo para que no se vea mal */
+    .filter-wrapper {
+        min-width: 120px;
+        width: auto;
     }
 }
 
@@ -650,15 +662,18 @@
         position: absolute;
         top: 0;
         right: 0;
-        width: 44px; /* Ancho fijo cuadrado */
-        height: 56px; /* Altura ajustada a la fila */
+        width: 32px; /* Más pequeño y compacto */
+        height: 32px;
         z-index: 1000; /* CORRECCIÓN: Menor que los dropdowns (1050) para no tapar texto */
-        border: none;
-        border-left: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
+        border: 1px solid var(--border-color);
         background-color: var(--bg-light); /* Fondo sólido para tapar iconos al hacer scroll */
         color: var(--primary-color);
-        border-radius: 0 0 0 8px;
+        border-radius: 6px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
     }
 
     /* Toolbar organizado en móvil (Compacto ~2 filas) */
@@ -1115,4 +1130,291 @@
         min-width: 50px !important;
         padding: 4px !important;
     }
+}
+
+/* ===== HERRAMIENTAS DE DIBUJO ===== */
+
+/* Paleta de colores (Estilo Quill) */
+.draw-color-option {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px; /* Cuadrado redondeado similar a Quill */
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.draw-color-option:hover {
+    transform: scale(1.15);
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.draw-color-option.selected {
+    border: 2px solid var(--primary-color) !important;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px var(--bg-light);
+}
+
+/* Ajustes para modo oscuro en dibujo */
+[data-theme="dark"] .draw-color-option {
+    border-color: rgba(255,255,255,0.2);
+}
+
+[data-theme="dark"] .pen-width-input::-webkit-slider-runnable-track {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .pen-width-input::-moz-range-track {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dropdown de color de dibujo */
+.draw-color-trigger {
+    background-color: var(--bg-light);
+    transition: background-color 0.2s;
+}
+
+.draw-color-trigger:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] .draw-color-trigger:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+
+/* Slider de grosor personalizado */
+.pen-width-input {
+    --pen-size: 16px;
+    --pen-color: #000000;
+    height: 1.5rem;
+    padding: 0;
+    max-width: 140px;
+}
+
+.pen-width-input::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.pen-width-input::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.pen-width-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--pen-size) !important;
+    height: var(--pen-size) !important;
+    background-color: var(--pen-color) !important;
+    border: 2px solid var(--bg-light);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    margin-top: calc((4px - var(--pen-size)) / 2) !important; /* Centrar verticalmente en el track de 4px */
+    transition: all 0.1s ease;
+}
+
+.pen-width-input::-moz-range-thumb {
+    width: var(--pen-size) !important;
+    height: var(--pen-size) !important;
+    background-color: var(--pen-color) !important;
+    border: 2px solid var(--bg-light);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: all 0.1s ease;
+}
+
+/* Canvas para vista previa de dibujos en el grid de notas */
+.note-drawing-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Los clics deben ir a la tarjeta, no al canvas */
+}
+
+/* Ajuste para slider en móvil */
+@media (max-width: 768px) {
+    .pen-width-input {
+        max-width: 100px; /* Ocupar espacio disponible en la barra móvil */
+    }
+    
+    /* Ajuste para botones de herramientas en móvil */
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ===== CURSOR BORRADOR ===== */
+
+/* Ocultar cursor por defecto cuando el borrador está activo */
+#editor-page.eraser-active #drawing-canvas {
+    cursor: none;
+}
+
+/* Círculo de previsualización del borrador */
+#eraser-cursor-preview {
+    position: absolute;
+    display: none; /* Se muestra con JS */
+    border: 2px solid rgba(0, 0, 0, 0.8); /* Borde más visible */
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9); /* Contraste blanco externo */
+    background-color: rgba(0, 0, 0, 0.05); /* Relleno sutil */
+    border-radius: 50%;
+    pointer-events: none; /* No interfiere con el mouse */
+    transform: translate(-50%, -50%); /* Centrar en la posición del cursor */
+    z-index: 10000; /* Siempre encima */
+    /* mix-blend-mode eliminado para asegurar visibilidad constante */
+}
+
+/* En tema oscuro, el borde es más claro */
+[data-theme="dark"] #eraser-cursor-preview {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== MEJORA DE CONTRASTE EN MODO CLARO ===== */
+/* Asegurar que los labels y textos muted sean más legibles en modo claro */
+:root:not([data-theme="dark"]) .text-muted {
+    color: #495057 !important; /* Gris oscuro en lugar de gris claro */
+}
+
+:root:not([data-theme="dark"]) label.small.text-muted {
+    color: #212529 !important; /* Casi negro para etiquetas pequeñas */
+    font-weight: 600;
+}
+
+/* ===== SELECTION MODE ===== */
+.note-card.selection-mode {
+    cursor: pointer;
+}
+
+.note-card .selection-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(102, 126, 234, 0.2);
+    border: 2px solid var(--primary-color);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none; /* Permite que los clics lleguen a la tarjeta */
+}
+
+.note-card.selected .selection-overlay {
+    opacity: 1;
+}
+
+.note-card .selection-overlay .selection-icon {
+    color: white;
+    background-color: var(--primary-color);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.selection-bar {
+    position: fixed;
+    top: auto;
+    bottom: 24px;
+    left: 50%;
+    width: 95%;
+    max-width: 550px; /* Un poco más ancho para acomodar el nuevo botón */
+    height: auto;
+    min-height: 60px;
+    padding: 0.25rem 0;
+    background: var(--primary-gradient);
+    z-index: 1100; /* Por encima del Navbar */
+    transform: translate(-50%, 150%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 100px;
+}
+
+.selection-bar.show {
+    transform: translate(-50%, 0);
+}
+
+/* Botón de Selección en Tarjeta (Estilo Google Keep) */
+.note-select-btn {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 28px;
+    height: 28px;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 20;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+/* Mostrar botón al hover o si está seleccionado o en modo selección */
+.note-card:hover .note-select-btn,
+.note-select-btn.checked,
+.selection-active .note-select-btn {
+    opacity: 1;
+    transform: scale(1);
+    top: -8px; /* Pequeño ajuste visual para que sobresalga */
+    left: -8px;
+}
+
+.note-select-btn:hover {
+    background-color: #f0f0f0;
+    color: var(--text-primary);
+}
+
+.note-select-btn.checked {
+    background-color: var(--text-primary); /* Contraste fuerte */
+    color: white;
+}
+
+[data-theme="dark"] .note-select-btn {
+    background-color: #2d2d2d;
+    color: #aaa;
+}
+
+[data-theme="dark"] .note-select-btn.checked {
+    background-color: white;
+    color: black;
+}
+
+/* Ajuste visual tarjeta seleccionada */
+.note-card.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color);
+    background-color: rgba(102, 126, 234, 0.05); /* Tinte sutil */
+}
+
+.note-card .selection-overlay {
+    display: none; /* Eliminamos el overlay anterior */
+}
+
+/* Ocultar botón flotante principal cuando hay selección activa */
+body.selection-mode-active .btn-fab {
+    transform: scale(0) rotate(-90deg);
+    pointer-events: none;
 }

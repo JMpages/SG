@@ -1,6 +1,6 @@
 <?php
 require_once '../backend/config/config.php';
-require_once '../backend/autologin.php';
+require_once '../backend/auth/autologin.php';
 
 // Verificar si el usuario está logueado
 if (!isset($_SESSION['usuario_id'])) {
@@ -27,24 +27,33 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 <body>
     <!-- Navbar -->
-    <?php include '../components/navbar.php'; ?>
+    <?php include 'components/navbar.php'; ?>
 
     <main class="container py-4 pb-5">
         <!-- Header -->
         <div class="tareas-header">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
+            <div class="row align-items-center">
+                <div class="col-12 col-md-6 text-start">
                     <h1><i class="fas fa-tasks me-2"></i>Mis Tareas</h1>
-                    <p class="mb-0 opacity-75">Organiza tus entregas y pendientes académicos</p>
+                    <p class="mb-0">Organiza tus entregas y pendientes académicos</p>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <div class="btn-group" role="group" aria-label="Vista">
-                        <button type="button" class="btn btn-outline-light active" id="btnVistaLista" title="Vista de Lista"><i class="fas fa-list"></i></button>
-                        <button type="button" class="btn btn-outline-light" id="btnVistaCalendario" title="Vista de Calendario"><i class="fas fa-calendar-alt"></i></button>
+                <div class="col-12 col-md-6 mt-3 mt-md-0">
+                    <div class="d-flex justify-content-end align-items-center gap-2 gap-sm-3 flex-nowrap">
+                        <!-- 1. Toggle de Vistas (Izquierda) -->
+                        <div class="btn-group flex-shrink-0" role="group" aria-label="Cambiar vista">
+                            <button type="button" class="btn btn-outline-light btn-sm active" id="btnVistaLista" title="Vista de Lista" style="height: 35px; width: 42px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-list"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-light btn-sm" id="btnVistaCalendario" title="Vista de Calendario" style="height: 35px; width: 42px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-calendar-alt"></i>
+                            </button>
+                        </div>
+
+                        <!-- 2. Agregar (Derecha) -->
+                        <button class="btn btn-agregar flex-shrink-0" data-bs-toggle="modal" data-bs-target="#modalTarea" style="white-space: nowrap; height: 35px; display: flex; align-items: center;">
+                            <i class="fas fa-plus me-1"></i><span class="d-none d-sm-inline">Nueva Tarea</span><span class="d-inline d-sm-none">Nueva</span>
+                        </button>
                     </div>
-                    <button class="btn btn-agregar" data-bs-toggle="modal" data-bs-target="#modalTarea">
-                        <i class="fas fa-plus me-2"></i>Nueva Tarea
-                    </button>
                 </div>
             </div>
         </div>
@@ -255,7 +264,7 @@ if (!isset($_SESSION['usuario_id'])) {
             }
 
             try {
-                const response = await fetch(`../backend/obtener_detalle_materia.php?id=${materiaId}`);
+                const response = await fetch(`../backend/materias/materias_controller.php?accion=detalle&id=${materiaId}`);
                 const result = await response.json();
                 
                 if(result.status === 'success' && result.data.criterios) {
@@ -403,7 +412,8 @@ if (!isset($_SESSION['usuario_id'])) {
             };
 
             try {
-                const response = await fetch('../backend/tareas_proceso.php', {
+                data.accion = 'guardar';
+                const response = await fetch('../backend/tareas/tareas_controller.php', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -421,6 +431,13 @@ if (!isset($_SESSION['usuario_id'])) {
                 alert('Error de conexión al guardar la tarea');
             }
         });
+
+        // Abrir modal si viene del dashboard (Quick Action)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('accion') === 'nueva') {
+            const addModal = new bootstrap.Modal(document.getElementById('modalTarea'));
+            addModal.show();
+        }
     });
     </script>
 </body>

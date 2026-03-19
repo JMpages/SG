@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async loadMaterias() {
             try {
-                const response = await fetch('../backend/obtener_materias.php');
+                const response = await fetch('../backend/materias/materias_controller.php?accion=listar');
                 const result = await response.json();
                 
                 if (result.status === 'success') {
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     estado: this.state.filtroEstado
                 });
 
-                const response = await fetch(`../backend/obtener_tareas.php?${params}`);
+                const response = await fetch(`../backend/tareas/tareas_controller.php?accion=listar&${params}`);
                 const result = await response.json();
 
                 if (result.status === 'success') {
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="tarea-header">
                             <div class="d-flex align-items-center overflow-hidden">
                                 <span class="tarea-materia text-truncate">${this.escapeHtml(tarea.materia_nombre)}</span>
-                                ${isCalificada ? '<span class="badge bg-warning text-dark ms-2 flex-shrink-0" title="Evaluación vinculada"><i class="fas fa-star fa-xs"></i></span>' : ''}
+                                ${isCalificada ? `<span class="badge bg-warning text-dark ms-2 flex-shrink-0" style="font-size: 0.65rem; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="Vinculado a: ${this.escapeHtml((tarea.criterio_nombre || 'Evaluación') + ' ' + (tarea.numero_evaluacion || ''))}"><i class="fas fa-star fa-xs me-1"></i>${this.escapeHtml((tarea.criterio_nombre || 'Evaluación') + ' ' + (tarea.numero_evaluacion || ''))}</span>` : ''}
                             </div>
                             <div class="form-check form-switch ms-2">
                                 <input class="form-check-input" type="checkbox" 
@@ -244,7 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const response = await fetch('../backend/tareas_proceso.php', {
+                data.accion = 'guardar';
+                const response = await fetch('../backend/tareas/tareas_controller.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -269,10 +270,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async toggleCompletada(id, isChecked) {
             try {
-                const response = await fetch('../backend/marcar_tarea.php', {
+                const response = await fetch('../backend/tareas/tareas_controller.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: id, completada: isChecked })
+                    body: JSON.stringify({ accion: 'marcar', id: id, completada: isChecked })
                 });
                 const result = await response.json();
                 
@@ -328,10 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
         async executeDelete() {
             const id = this.elements.idTareaEliminar.value;
             try {
-                const response = await fetch('../backend/eliminar_tarea.php', {
+                const response = await fetch('../backend/tareas/tareas_controller.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: id })
+                    body: JSON.stringify({ accion: 'eliminar', id: id })
                 });
                 const result = await response.json();
 
@@ -393,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
         async loadCalendarTasks() {
             try {
                 // Cargar todas las tareas (sin filtros de estado) para el calendario
-                const response = await fetch('../backend/obtener_tareas.php?estado=todas');
+                const response = await fetch('../backend/tareas/tareas_controller.php?accion=listar&estado=todas');
                 const result = await response.json();
                 
                 if(result.status === 'success') {
@@ -564,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="dia-tarea-info">
                             <div class="dia-tarea-titulo">
                                 ${this.escapeHtml(task.titulo)}
-                                ${task.es_calificada == 1 ? '<i class="fas fa-star text-warning ms-1" style="font-size: 0.7em;" title="Evaluación"></i>' : ''}
+                                ${task.es_calificada == 1 ? `<span class="badge bg-warning text-dark ms-1" style="font-size: 0.6em; vertical-align: middle;">${this.escapeHtml((task.criterio_nombre || 'Eval.') + ' ' + (task.numero_evaluacion || ''))}</span>` : ''}
                             </div>
                             <div class="dia-tarea-materia">${this.escapeHtml(task.materia_nombre)}</div>
                         </div>

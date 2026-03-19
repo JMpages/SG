@@ -1,6 +1,6 @@
 // Validaciones de formulario de registro
 document.addEventListener('DOMContentLoaded', function() {
-    const formularioRegistro = document.querySelector('form[action*="registro_proceso"]');
+    const formularioRegistro = document.querySelector('form[action*="auth_controller.php"] input[value="registro"]')?.closest('form');
     
     if(formularioRegistro) {
         formularioRegistro.addEventListener('submit', function(e) {
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // VALIDACIONES PARA EL FORMULARIO DE LOGIN
 // =====================================================
 document.addEventListener('DOMContentLoaded', function() {
-    const formularioLogin = document.querySelector('form[action*="login_proceso"]');
+    const formularioLogin = document.querySelector('form[action*="auth_controller.php"] input[value="login"]')?.closest('form');
     
     if(formularioLogin) {
         formularioLogin.addEventListener('submit', function(e) {

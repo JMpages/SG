@@ -4,10 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $pagina_actual = basename($_SERVER['PHP_SELF']);
 
-// Detectar si estamos en la raíz (index.php) o en una subcarpeta (view/)
-$es_root = file_exists('view/login.php'); // Truco: si existe esta ruta relativa, estamos en root
+// Detectar si estamos en la raíz (index.php) o en una subcarpeta (pages/)
+$es_root = file_exists('pages/login.php'); 
 $ruta_base = $es_root ? '' : '../';
-$ruta_vistas = $es_root ? 'view/' : '';
+$ruta_vistas = $es_root ? 'pages/' : '';
 $ruta_backend = $es_root ? 'backend/' : '../backend/';
 ?>
 
@@ -42,6 +42,7 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .btn-login {
@@ -207,6 +208,13 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
         display: none;
     }
 
+    /* Optimización de botones de acceso para móvil */
+    .btn-auth {
+        padding: 0.5rem 0.5rem; /* Menos relleno horizontal */
+        font-size: 0.8rem;      /* Texto ligeramente más pequeño */
+        flex: 1;                /* Distribuir espacio equitativamente */
+    }
+
     .user-menu {
         flex: 1;
         width: auto;
@@ -338,7 +346,7 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
                                 </svg>
                                 Mi Perfil
                             </a>
-                            <a href="<?php echo $ruta_backend; ?>logout.php" class="dropdown-item justify-content-center justify-content-md-start">
+                             <a class="dropdown-item text-danger" href="<?php echo $ruta_backend; ?>auth/auth_controller.php?accion=logout">
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                     <polyline points="16 17 21 12 16 7"></polyline>
@@ -360,56 +368,66 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
 </nav>
 
 <script>
-// Sistema de Tema
-const html = document.documentElement;
-const themeToggle = document.getElementById('themeToggle');
-const themeIcon = document.getElementById('themeIcon');
+// Tema: manejo inline (sin archivo externo) — detecta sistema y permite guardar preferencia
+;(function(){
+    const html = document.documentElement;
+    const storageKey = 'theme';
+    const themeToggle = document.getElementById('themeToggle');
+    const icon = document.getElementById('themeIcon');
 
-const moonIcon = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-const sunIcon = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+    const svgs = {
+        moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>',
+        sun: '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
+    };
 
-const savedTheme = localStorage.getItem('theme') || 'light';
-html.setAttribute('data-theme', savedTheme);
-updateThemeIcon(savedTheme);
+    function isValid(t){ return t === 'light' || t === 'dark'; }
+    function detectSystem(){ try { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch(e){ return 'light'; } }
+    function getStored(){ try { return localStorage.getItem(storageKey); } catch(e){ return null; } }
+    function updateIcon(t){ if (!icon) return; icon.innerHTML = t === 'light' ? svgs.moon : svgs.sun; }
+    function apply(t, save=true){ if (!isValid(t)) return; html.setAttribute('data-theme', t); updateIcon(t); if (save) { try { localStorage.setItem(storageKey, t); } catch(e){} } }
 
-function updateThemeIcon(theme) {
-    themeIcon.innerHTML = theme === 'light' ? moonIcon : sunIcon;
-}
+    // Inicializar tema al cargar
+    (function init(){
+        const stored = getStored();
+        if (isValid(stored)) apply(stored, false);
+        else apply(detectSystem(), false);
+    })();
 
-themeToggle.addEventListener('click', function(e) {
-    e.stopPropagation();
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
-});
+    // Toggle desde UI
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function(e){
+            e.stopPropagation();
+            const current = html.getAttribute('data-theme') || 'light';
+            const next = current === 'light' ? 'dark' : 'light';
+            apply(next, true);
+        });
+    }
+})();
 
 // Sistema de Dropdown - Versión simplificada
 const userBtn = document.getElementById('userBtn');
 const dropdown = document.getElementById('dropdown');
 
 if (userBtn && dropdown) {
-    // Click en el botón
+    // Alternar menú al hacer clic
     userBtn.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        const isActive = dropdown.classList.contains('active');
-        dropdown.classList.toggle('active', !isActive);
+        dropdown.classList.toggle('active');
     });
 
-    // Click en cualquier parte del documento
+    // Cerrar menú al hacer clic en cualquier parte fuera del menú de usuario
     document.addEventListener('click', function(e) {
-        const userMenu = userBtn.closest('.user-menu');
-        if (userMenu && !userMenu.contains(e.target)) {
+        if (!userBtn.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.classList.remove('active');
         }
     });
 
-    // Evitar cerrar al clickear dentro del dropdown
+    // Asegurar que el menú se cierre al hacer clic en una opción (útil para efectos visuales)
     dropdown.addEventListener('click', function(e) {
         if (e.target.closest('.dropdown-item')) {
-            e.stopPropagation();
+            // El navegador cambiará de página, pero cerramos el menú por si acaso
+            setTimeout(() => dropdown.classList.remove('active'), 100);
         }
     });
 }

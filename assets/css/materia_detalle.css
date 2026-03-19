@@ -7,9 +7,12 @@
     --text-muted: #999;
     --border-color: #e0e0e0;
     --border-light: #f0f0f0;
-    --bg-light: #fffdf4; /* crema suave para elementos */
-    --bg-body: #fffaf0; /* fondo principal (crema) */
-    --secondary-color: #e6f0f6; /* tarjetas con tono azul-gris muy suave */
+    --bg-light: #fffdf4;
+    /* crema suave para elementos */
+    --bg-body: #fffaf0;
+    /* fondo principal (crema) */
+    --secondary-color: #e6f0f6;
+    /* tarjetas con tono azul-gris muy suave */
     --card-gradient: linear-gradient(180deg, #dfeff6 0%, #cfe7ee 100%);
     --card-text-color: #2b2b2b;
 
@@ -20,9 +23,10 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.2);
 
-    --success-color: #28a745;
-    --warning-color: #ffc107;
-    --danger-color: #dc3545;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
 }
 
 /* Tema oscuro - Detectar prefers-color-scheme */
@@ -38,7 +42,7 @@
         --secondary-color: #082a3a;
         --card-gradient: linear-gradient(180deg, #0b3348 0%, #0a3b55 100%);
         --card-text-color: #f6fbff;
-        --border-color: rgba(255,255,255,0.15);
+        --border-color: rgba(255, 255, 255, 0.15);
         --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
         --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
     }
@@ -56,7 +60,7 @@
     --secondary-color: #082a3a;
     --card-gradient: linear-gradient(180deg, #061226 0%, #0b2a4a 100%);
     --card-text-color: #f6fbff;
-    --border-color: rgba(255,255,255,0.15);
+    --border-color: rgba(255, 255, 255, 0.15);
     --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
     --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
 }
@@ -71,9 +75,16 @@ body {
 .materia-header {
     background: var(--primary-gradient);
     color: white;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
     border-radius: 1rem;
+}
+
+@media (min-width: 768px) {
+    .materia-header {
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
 }
 
 .materia-header h1 {
@@ -128,24 +139,84 @@ body {
 }
 
 .criterio-card-body {
-    padding: 1.25rem;
+    padding: 1rem;
+    background-color: var(--secondary-color);
+}
+
+@media (min-width: 768px) {
+    .criterio-card-body {
+        padding: 1.5rem;
+    }
+}
+
+.nota-input {
+    transition: all 0.2s ease;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    padding: 0.6rem;
+}
+
+.nota-input:focus {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+    border-color: var(--primary-color);
+}
+
+/* Colores de validación personalizados */
+.nota-input.is-valid {
+    border-color: var(--success-color) !important;
+    background-image: none !important;
+}
+
+.nota-input.is-invalid {
+    border-color: var(--danger-color) !important;
+    background-image: none !important;
+}
+
+.nota-input.border-warning {
+    border-color: var(--warning-color) !important;
 }
 
 /* Estructura para cada fila de evaluación generada por JS */
 .evaluacion-row {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-light) !important;
+}
+
+.evaluacion-row.has-value {
+    border-color: var(--primary-color) !important;
+    background-color: var(--bg-light) !important;
 }
 
 .evaluacion-row label {
     margin-bottom: 0 !important;
-    flex-basis: 30%; /* Ancho para la etiqueta */
-    min-width: 120px;
+    font-size: 0.85rem;
 }
 
 .evaluacion-row > div {
-    flex-grow: 1; /* El contenedor del input ocupa el resto del espacio */
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .evaluacion-row {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1.25rem !important;
+    }
+
+    .evaluacion-row label {
+        flex-basis: 30%;
+        min-width: 150px;
+    }
+
+    .evaluacion-row > div {
+        flex-grow: 1;
+        width: auto;
+    }
 }
 
 .criterio-card-body .form-control {
@@ -154,74 +225,345 @@ body {
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Sidebar de Resumen */
+/* Sidebar de Resumen - Tablero Premium Glassmorphism */
 .summary-sidebar {
-    position: sticky;
-    top: 2rem;
-    background: var(--bg-light);
+    width: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
     padding: 1.5rem;
-    border-radius: 0.75rem;
-    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 992px) {
+    .summary-sidebar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 140px; /* Margen de seguridad del navbar */
+        z-index: 990;
+    }
+}
+
+[data-theme="dark"] .summary-sidebar {
+    background: rgba(13, 17, 23, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* FIX: Asegurar que el texto "Ver Resumen" en móvil respete el tema oscuro */
+[data-theme="dark"] .sidebar-info-card .text-body {
+    color: var(--text-primary) !important;
 }
 
 .card-resumen-final {
+    background: var(--primary-gradient); /* Usar el gradiente original de la página */
+    border-radius: 15px;
+    color: white;
+    padding: 1.25rem !important;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1rem !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 50;
+}
+
+/* Efecto de brillo para la tarjeta */
+.card-resumen-final::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* --- ESTILOS PARA LA VISTA MÓVIL --- */
+@media (max-width: 991.98px) {
+    .summary-sidebar {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        position: relative;
+        top: 0;
+        z-index: 1;
+        margin-bottom: 1rem;
+    }
+
+    .sidebar-info-card {
+        background: var(--secondary-color) !important;
+        padding: 1.25rem !important;
+        border-radius: 20px;
+        margin: 0 !important;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    #resumen-criterios-collapse.show + div .show-text { display: none; }
+    #resumen-criterios-collapse.show + div .hide-text { display: inline; }
+}
+
+/* Componente Flotante para Móvil */
+.floating-summary-mobile {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    z-index: 1000;
+    
     background: var(--primary-gradient);
     color: white;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    text-align: center;
+    
+    padding: 1rem;
+    border-radius: 15px;
+    
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* Animación de entrada */
+    transform: translateY(200%);
+    animation: slide-in-bottom 0.5s 0.2s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.card-resumen-final .label {
-    font-size: 0.9rem;
-    opacity: 0.8;
+@keyframes slide-in-bottom {
+    to {
+        transform: translateY(0);
+    }
 }
 
-.card-resumen-final .nota {
-    font-size: 3rem;
+.floating-summary-mobile .label {
     font-weight: 700;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.floating-summary-mobile .nota {
+    font-size: 1.8rem;
+    font-weight: 900;
     line-height: 1;
+}
+
+.floating-summary-mobile .barra-progreso {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
     margin: 0.5rem 0;
 }
 
-.barra-progreso {
-    height: 8px;
+.floating-summary-mobile .barra {
+    background: white;
+    height: 100%;
+    transition: width 0.6s ease;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* --- FIN DE ESTILOS PARA VISTA MÓVIL --- */
+
+
+.card-resumen-final .label {
+    font-weight: 700;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.9);
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.card-resumen-final .nota {
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.card-resumen-final .barra-progreso {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    height: 4px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.4rem !important;
+}
+
+.card-resumen-final .barra {
+    background: white;
+    height: 100%;
+    transition: width 0.6s ease;
+}
+
+@media (min-width: 992px) {
+    .card-resumen-final .barra-progreso {
+        width: 100%;
+        margin: 1rem 0 !important;
+    }
+}
+
+.card-resumen-final .barra {
+    background: white;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    height: 100%;
+    transition: width 0.3s ease-in-out;
+}
+
+.sidebar-info-card {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* Eliminado el hover de la tarjeta */
+
+
+
+/* Estilos para el ingreso de notas Premium */
+.evaluacion-row {
+    border: 1px solid var(--border-color) !important;
+}
+
+.eval-number-badge {
+    background: var(--bg-body);
+    color: var(--primary-color);
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    border: 1px solid var(--border-light);
+}
+
+.grade-input-group-premium {
+    border-radius: 10px;
+    background: var(--input-bg);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.grade-input-group-premium:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.grade-input-group-premium input {
+    border: none !important;
+    color: var(--text-primary);
+}
+
+/* Selector de Escala Estilizado */
+.scale-selector-wrapper {
+    position: relative;
+    min-width: 60px;
+    background: var(--bg-light);
+    border-left: 1px solid var(--border-light);
+}
+
+.scale-select-native {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    padding: 0 20px 0 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    z-index: 2;
+}
+
+.scale-select-native:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.scale-select-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 0.7rem;
+    color: var(--primary-color);
+    opacity: 0.5;
+}
+
+/* Barras de progreso individuais */
+.eval-progress-container {
+    height: 4px;
+    background: var(--bg-body);
+    border-radius: 10px;
     overflow: hidden;
 }
 
-.barra-progreso .barra {
+.eval-progress-bar {
     height: 100%;
-    background-color: white;
-    border-radius: 4px;
-    transition: width 0.3s ease-in-out;
+    border-radius: 10px;
+    transition: width 0.4s ease, background-color 0.3s;
 }
+
+.badge-status-success { background: rgba(16, 185, 129, 0.1); color: #059669; }
+.badge-status-warning { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+.badge-status-danger { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+
+.bg-success { background-color: #10b981 !important; }
+.bg-warning { background-color: #f59e0b !important; }
+.bg-danger { background-color: #ef4444 !important; }
+
 
 .resumen-criterio-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem;
-    background: var(--secondary-color);
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-light);
+    padding: 0.5rem 0.25rem;
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    margin-bottom: 0 !important;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+[data-theme="dark"] .resumen-criterio-item {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.resumen-criterio-item:last-child {
+    border-bottom: none !important;
 }
 
 .resumen-criterio-item .nombre {
-    font-weight: 500;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .resumen-criterio-item .nota-promedio {
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* Toast (ya está en materias.css, pero por si acaso) */
+/* Toast and utility styles */
 [data-theme="dark"] .toast {
     background-color: var(--bg-light);
     color: var(--text-primary);

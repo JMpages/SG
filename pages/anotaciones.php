@@ -1,7 +1,7 @@
 <?php
 // Configuración y sesión
 require_once '../backend/config/config.php';
-require_once '../backend/autologin.php';
+require_once '../backend/auth/autologin.php';
 
 // Verificar si el usuario está logueado
 if(!isset($_SESSION['usuario'])){
@@ -31,7 +31,7 @@ if(!isset($_SESSION['usuario'])){
 </head>
 <body>
     <!-- Navbar -->
-    <?php include '../components/navbar.php'; ?>
+    <?php include 'components/navbar.php'; ?>
     
     <!-- Contenido Principal -->
     <main class="container py-4 pb-5">
@@ -39,20 +39,36 @@ if(!isset($_SESSION['usuario'])){
         <!-- Header Estilo Materias -->
         <div class="anotaciones-header">
             <div class="row align-items-center">
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-6 text-start">
                     <h1><i class="fas fa-sticky-note"></i> Mis Anotaciones</h1>
-                    <p>Gestiona tus notas y apuntes personales</p>
+                    <p class="mb-0">Gestiona tus notas y apuntes personales</p>
                 </div>
-                <div class="col-12 col-md-6 mt-3 mt-md-0 d-flex justify-content-md-end">
-                    <!-- Barra de Filtros -->
-                    <div class="filter-bar-custom shadow-sm">
-                        <select class="form-select border-0 shadow-none text-truncate" id="filterMateria" style="cursor: pointer;">
-                            <option value="all">Todas</option>
-                            <!-- Se llenará con JS -->
-                        </select>
-                        <div class="vr"></div>
-                        <input type="date" class="form-control border-0 shadow-none" id="filterDate" style="cursor: pointer;">
-                        <button class="btn btn-filter-clear" id="btnClearFilters" title="Limpiar filtros"><i class="fas fa-broom"></i></button>
+                <div class="col-12 col-md-6 mt-3 mt-md-0">
+                    <div class="d-flex justify-content-md-end justify-content-start align-items-center gap-2 gap-sm-3 flex-nowrap">
+                        
+                        <!-- 1. Filtros (Izquierda/Centro) -->
+                        <div class="filter-bar-premium flex-grow-1 flex-md-grow-0">
+                            <div class="position-relative d-flex align-items-center flex-grow-1 filter-wrapper">
+                                <i class="fas fa-book filter-icon-overlay"></i>
+                                <select class="form-select select-filter-custom" id="filterMateria">
+                                    <option value="all" style="background-color: #333; color: white;">Todas</option>
+                                    <!-- Se llenará con JS -->
+                                </select>
+                            </div>
+                            <div class="vr mx-1 opacity-25"></div>
+                            <div class="position-relative d-flex align-items-center flex-grow-1 filter-wrapper">
+                                <i class="fas fa-sort-amount-down filter-icon-overlay"></i>
+                                <select class="form-select select-filter-custom" id="sortNotes">
+                                    <option value="edited_desc" style="background-color: #333; color: white;">Editado (Reciente)</option>
+                                    <option value="created_desc" style="background-color: #333; color: white;">Creado (Nuevo)</option>
+                                    <option value="created_asc" style="background-color: #333; color: white;">Creado (Antiguo)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-filter-clear-premium" id="btnClearFilters" title="Limpiar filtros">
+                                <i class="fas fa-broom"></i>
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -87,6 +103,9 @@ if(!isset($_SESSION['usuario'])){
                     </div>
 
                     <div class="d-flex align-items-center gap-1 me-2">
+                        <!-- Estado de guardado -->
+                        <div id="saveStatus" class="d-flex align-items-center me-2"></div>
+
                         <button type="button" class="btn btn-sm text-muted" id="btnUndo" title="Deshacer (Ctrl+Z)"><i class="fas fa-undo"></i></button>
                         <button type="button" class="btn btn-sm text-muted" id="btnRedo" title="Rehacer (Ctrl+Y)"><i class="fas fa-redo"></i></button>
                     </div>
@@ -223,42 +242,118 @@ if(!isset($_SESSION['usuario'])){
 
                                 <!-- PANEL DIBUJO -->
                                 <div id="panel-draw" class="sidebar-panel h-100 d-none flex-column">
-                                    <div class="p-3 d-flex flex-column gap-3 overflow-y-auto">
+                                    
+                                    <!-- VISTA ESCRITORIO -->
+                                    <div class="d-none d-md-flex flex-column gap-3 p-3 h-100">
                                         <div>
-                                            <label class="small text-muted fw-bold mb-2">Color del trazo</label>
-                                            <div class="d-flex gap-2 flex-wrap">
-                                                <input type="radio" class="btn-check" name="penColor" id="pColorBlack" value="black" checked>
-                                                <label class="btn btn-outline-dark btn-sm rounded-circle p-2" for="pColorBlack" style="width: 32px; height: 32px; background-color: black;"></label>
+                                            <label class="small text-muted fw-bold mb-2 d-block">Herramienta</label>
+                                            <div class="btn-group w-100" role="group">
+                                                <button type="button" class="btn btn-outline-secondary active btn-tool-pen" title="Lápiz">
+                                                    <i class="fas fa-pen"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary btn-tool-eraser" title="Borrador">
+                                                    <i class="fas fa-eraser"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <label class="small text-muted fw-bold mb-0">Color del trazo</label>
+                                            <div class="position-relative drawing-color-picker-container">
+                                                <!-- Trigger: Lo que se ve siempre -->
+                                                <div class="draw-color-trigger d-flex align-items-center justify-content-center p-1 border rounded" style="cursor: pointer; width: 50px; height: 34px;" title="Color del trazo">
+                                                    <div class="current-draw-color" style="width: 20px; height: 20px; background-color: #000000; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1);"></div>
+                                                    <i class="fas fa-chevron-down ms-1 small text-muted" style="font-size: 0.7rem;"></i>
+                                                </div>
                                                 
-                                                <input type="radio" class="btn-check" name="penColor" id="pColorBlue" value="#0d6efd">
-                                                <label class="btn btn-outline-primary btn-sm rounded-circle p-2" for="pColorBlue" style="width: 32px; height: 32px; background-color: #0d6efd; border-color: #0d6efd;"></label>
-                                                
-                                                <input type="radio" class="btn-check" name="penColor" id="pColorRed" value="#dc3545">
-                                                <label class="btn btn-outline-danger btn-sm rounded-circle p-2" for="pColorRed" style="width: 32px; height: 32px; background-color: #dc3545; border-color: #dc3545;"></label>
-                                                
-                                                <input type="radio" class="btn-check" name="penColor" id="pColorGreen" value="#198754">
-                                                <label class="btn btn-outline-success btn-sm rounded-circle p-2" for="pColorGreen" style="width: 32px; height: 32px; background-color: #198754; border-color: #198754;"></label>
+                                                <!-- Dropdown: Lo que se despliega -->
+                                                <div class="drawing-palette-dropdown position-absolute top-100 end-0 mt-1 p-2 border rounded shadow-sm d-none" style="z-index: 2000; width: 190px; background-color: var(--bg-light);">
+                                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                                        <div class="draw-color-option" data-color="#000000" style="background-color: #000000;" title="Negro"></div>
+                                                        <div class="draw-color-option" data-color="#e60000" style="background-color: #e60000;" title="Rojo"></div>
+                                                        <div class="draw-color-option" data-color="#ff9900" style="background-color: #ff9900;" title="Naranja"></div>
+                                                        <div class="draw-color-option" data-color="#ffff00" style="background-color: #ffff00;" title="Amarillo"></div>
+                                                        <div class="draw-color-option" data-color="#008a00" style="background-color: #008a00;" title="Verde"></div>
+                                                        <div class="draw-color-option" data-color="#0066cc" style="background-color: #0066cc;" title="Azul"></div>
+                                                        <div class="draw-color-option" data-color="#8833ff" style="background-color: #8833ff;" title="Púrpura"></div>
+                                                    </div>
+                                                    <div class="border-top pt-2">
+                                                        <label class="small text-muted mb-1 d-block">Personalizado:</label>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <input type="color" class="form-control form-control-color form-control-sm p-0 border-0 custom-pen-color" value="#000000" title="Elige tu color">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         
                                         <div>
-                                            <label class="small text-muted fw-bold mb-2">Grosor</label>
-                                            <input type="range" class="form-range" id="penWidth" min="1" max="5" step="0.5" value="2">
+                                            <label class="small text-muted fw-bold mb-2 d-block">Grosor</label>
+                                            <input type="range" class="form-range pen-width-input" min="1" max="5" step="0.5" value="2">
                                         </div>
 
                                         <hr class="my-1">
 
                                         <div class="d-grid gap-2">
-                                            <button class="btn btn-primary" id="btnInsertDrawing">
-                                                <i class="fas fa-check me-2"></i>Insertar Dibujo
-                                            </button>
-                                            <button class="btn btn-outline-secondary" id="btnClearCanvas">
-                                                <i class="fas fa-eraser me-2"></i>Limpiar Lienzo
+                                            <button class="btn btn-outline-danger btn-clear-canvas">
+                                                <i class="fas fa-trash-alt me-2"></i>Limpiar Lienzo
                                             </button>
                                         </div>
                                         
-                                        <div class="alert alert-info small mt-2 mb-0">
-                                            <i class="fas fa-info-circle me-1"></i> Dibuja sobre la hoja y pulsa "Insertar" para fijarlo como imagen.
+                                        <div class="alert alert-warning small mt-2 mb-0">
+                                            <i class="fas fa-exclamation-triangle me-1"></i> Los dibujos no salen en la exportación a PDF.
+                                        </div>
+                                    </div>
+
+                                    <!-- VISTA MÓVIL (Barra inferior compacta) -->
+                                    <div class="d-flex d-md-none flex-column w-100">
+                                        <div class="d-flex align-items-center justify-content-between p-2 gap-2 w-100">
+                                        <!-- Color Picker (Abre hacia arriba) -->
+                                        <div class="position-relative drawing-color-picker-container">
+                                            <div class="draw-color-trigger d-flex align-items-center justify-content-center p-1 border rounded" style="cursor: pointer; width: 40px; height: 36px;" title="Color">
+                                                <div class="current-draw-color" style="width: 20px; height: 20px; background-color: #000000; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1);"></div>
+                                            </div>
+                                            <div class="drawing-palette-dropdown position-absolute bottom-100 start-0 mb-1 p-2 border rounded shadow-sm d-none" style="z-index: 2000; width: 190px; background-color: var(--bg-light);">
+                                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                                    <div class="draw-color-option" data-color="#000000" style="background-color: #000000;"></div>
+                                                    <div class="draw-color-option" data-color="#e60000" style="background-color: #e60000;"></div>
+                                                    <div class="draw-color-option" data-color="#ff9900" style="background-color: #ff9900;"></div>
+                                                    <div class="draw-color-option" data-color="#ffff00" style="background-color: #ffff00;"></div>
+                                                    <div class="draw-color-option" data-color="#008a00" style="background-color: #008a00;"></div>
+                                                    <div class="draw-color-option" data-color="#0066cc" style="background-color: #0066cc;"></div>
+                                                    <div class="draw-color-option" data-color="#8833ff" style="background-color: #8833ff;"></div>
+                                                </div>
+                                                <div class="border-top pt-2 d-flex align-items-center gap-2">
+                                                    <label class="small text-muted mb-0">Personalizado:</label>
+                                                    <input type="color" class="form-control form-control-color form-control-sm p-0 border-0 custom-pen-color" value="#000000">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Herramientas (Pen/Eraser) -->
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-secondary active btn-tool-pen" title="Lápiz">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-tool-eraser" title="Borrador">
+                                                <i class="fas fa-eraser"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Slider Grosor -->
+                                        <div class="flex-grow-1 px-1 d-flex align-items-center justify-content-center">
+                                            <input type="range" class="form-range pen-width-input m-0" min="1" max="5" step="0.5" value="2">
+                                        </div>
+                                        </div>
+
+                                        <!-- Opciones Expandidas -->
+                                        <div class="mobile-expanded-group px-2 pb-2">
+                                            <button class="btn btn-outline-danger btn-clear-canvas w-100 mb-2">
+                                                <i class="fas fa-trash-alt me-2"></i>Limpiar Lienzo
+                                            </button>
+                                            <div class="alert alert-warning small mb-0 p-2 text-center">
+                                                <i class="fas fa-exclamation-triangle me-1"></i> Los dibujos no salen en la exportación a PDF.
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -276,6 +371,8 @@ if(!isset($_SESSION['usuario'])){
                             <div id="editor-container"></div>
                             <!-- Canvas Superpuesto -->
                             <canvas id="drawing-canvas"></canvas>
+                            <!-- Cursor Preview para Borrador -->
+                            <div id="eraser-cursor-preview"></div>
                         </div>
                     </div>
                     </div>
@@ -327,6 +424,6 @@ if(!isset($_SESSION['usuario'])){
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <!-- JS Específico -->
-    <script src="../assets/js/anotaciones.js"></script>
+    <script src="../assets/js/anotaciones.js?v=1.2"></script>
 </body>
 </html>

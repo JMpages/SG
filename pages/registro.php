@@ -1,7 +1,7 @@
 <?php
 //configuración de la base de datos
 require_once '../backend/config/config.php';
-require_once '../backend/autologin.php';
+require_once '../backend/auth/autologin.php';
 
 //si ya esta logeado, se redirige
 if(isset($_SESSION['usuario'])){
@@ -16,15 +16,7 @@ if(isset($_SESSION['usuario'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuario</title>
-    <!-- Script para aplicar tema (claro/oscuro) -->
-    <script>
-        (function() {
-            const theme = localStorage.getItem('theme');
-            if (theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-            }
-        })();
-    </script>
+    <!-- Tema: script eliminado por petición del usuario -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <!-- iconos de google -->
@@ -61,7 +53,8 @@ if(isset($_SESSION['usuario'])){
                                 <?php unset($_SESSION['errores_registro']); ?>
                             <?php endif; ?>
 
-                            <form action="../backend/registro_proceso.php" method="POST" novalidate>
+                            <form action="../backend/auth/auth_controller.php" method="POST" novalidate>
+                                <input type="hidden" name="accion" value="registro">
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <label for="nombre" class="form-label">Nombre de usuario</label>
@@ -73,8 +66,7 @@ if(isset($_SESSION['usuario'])){
                                     </div>
                                     <div class="col-12 mb-3">
                                         <label for="password" class="form-label">Contraseña</label>
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Tú contraseña" required>
-                                        
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Tu contraseña" required>
                                     </div>
                                     <div class="col-12 mb-3">
                                         <label for="password_confirm" class="form-label">Confirmar Contraseña</label>

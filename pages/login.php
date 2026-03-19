@@ -1,7 +1,7 @@
 <?php
 // Configuración de la base de datos
 require_once '../backend/config/config.php';
-require_once '../backend/autologin.php';
+require_once '../backend/auth/autologin.php';
 
 // Si ya está logeado, se redirige
 if(isset($_SESSION['usuario'])){
@@ -16,15 +16,7 @@ if(isset($_SESSION['usuario'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - Sistema de Notas</title>
-    <!-- Script para aplicar tema (claro/oscuro) -->
-    <script>
-        (function() {
-            const theme = localStorage.getItem('theme');
-            if (theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-            }
-        })();
-    </script>
+    <!-- Tema: script eliminado por petición del usuario -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <!-- iconos de google -->
@@ -50,15 +42,13 @@ if(isset($_SESSION['usuario'])){
                             </div>
 
                             <!-- Mostrar errores si existen -->
-                            <?php if(isset($_SESSION['errores_login'])): ?>
+                            <?php if(isset($_SESSION['error_login'])): ?>
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <strong>¡Error!</strong><br>
-                                    <?php foreach($_SESSION['errores_login'] as $error): ?>
-                                        • <?php echo htmlspecialchars($error); ?><br>
-                                    <?php endforeach; ?>
+                                    <?php echo htmlspecialchars($_SESSION['error_login']); ?>
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
-                                <?php unset($_SESSION['errores_login']); ?>
+                                <?php unset($_SESSION['error_login']); ?>
                             <?php endif; ?>
 
                             <!-- Mostrar mensajes de éxito -->
@@ -71,21 +61,25 @@ if(isset($_SESSION['usuario'])){
                                 <?php unset($_SESSION['mensaje_exito']); ?>
                             <?php endif; ?>
 
-                            <form action="../backend/login_proceso.php" method="POST" novalidate>
+                            <form action="../backend/auth/auth_controller.php" method="POST" novalidate>
+                                <input type="hidden" name="accion" value="login">
                                 <div class="row">
                                     <div class="col-12 mb-3">
-                                        <label for="usuario" class="form-label">Nombre de usuario <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Tu nombre de usuario" required>
+                                        <label for="usuario" class="form-label">Usuario o Email <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Tu nombre de usuario o email" required>
                                     </div>
                                     <div class="col-12 mb-3">
                                         <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Tu contraseña" required>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="Tu contraseña" required>
+                                            <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Mostrar contraseña"><i class="fas fa-eye"></i></button>
+                                        </div>
                                     </div>
                                     <div class="col-12 mb-3">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="form-check mb-0">
-                                                <input class="form-check-input" type="checkbox" id="recordar" name="recordar">
-                                                <label class="form-check-label" for="recordar">Recuérdame</label>
+                                                <input class="form-check-input" type="checkbox" id="recuerdame" name="recuerdame">
+                                                <label class="form-check-label" for="recuerdame">Recuérdame</label>
                                             </div>
                                             <a href="recuperar.php" class="text-decoration-none small">¿Olvidaste tu contraseña?</a>
                                         </div>
@@ -112,5 +106,24 @@ if(isset($_SESSION['usuario'])){
 
     <!-- Validaciones y manejo de autenticación -->
     <script src="../assets/js/autenticacion.js"></script>
+    <script>
+        (function(){
+            const btn = document.getElementById('togglePassword');
+            if (!btn) return;
+            btn.addEventListener('click', function(){
+                const pw = document.getElementById('password');
+                const icon = this.querySelector('i');
+                if (pw.type === 'password') {
+                    pw.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    pw.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

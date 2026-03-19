@@ -10,5 +10,8 @@ try {
     die("Error de conexión a la base de datos.");
 }
 
+// Clave secreta para firmar la cookie 'recuerdame'. Cambiar en producción.
+$app_secret = getenv('APP_SECRET') ?: 'dev_change_this_secret_please_replace';
+
 session_start();
 ?>

@@ -8,11 +8,16 @@
     --text-muted: #999;
     --border-color: #e0e0e0;
     --border-light: #f0f0f0;
-    --bg-light: #fffdf4; /* crema suave para elementos */
-    --bg-body: #fffaf0; /* fondo principal (crema) */
-    --secondary-color: #e6f0f6; /* tarjetas con tono azul-gris muy suave para distinguir del fondo */
-    --card-gradient: linear-gradient(180deg, #dfeff6 0%, #cfe7ee 100%); /* header distinto del cuerpo (modo claro) */
-    --card-text-color: #2b2b2b; /* texto oscuro para cabeceras */
+    --bg-light: #fffdf4;
+    /* crema suave para elementos */
+    --bg-body: #fffaf0;
+    /* fondo principal (crema) */
+    --secondary-color: #e6f0f6;
+    /* tarjetas con tono azul-gris muy suave para distinguir del fondo */
+    --card-gradient: linear-gradient(180deg, #dfeff6 0%, #cfe7ee 100%);
+    /* header distinto del cuerpo (modo claro) */
+    --card-text-color: #2b2b2b;
+    /* texto oscuro para cabeceras */
 
     /* Badges */
     --badge-active-bg: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
@@ -28,42 +33,55 @@
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
         --text-primary: #e6eef9;
-        --text-secondary: #95a9bb; /* descripción: tono azulado y más apagado */
+        --text-secondary: #95a9bb;
+        /* descripción: tono azulado y más apagado */
         --text-muted: #8899a8;
         --border-color: #404040;
         --border-light: #2a2a2a;
-        --bg-light: #07182b; /* elementos ligeramente más claros */
-        --bg-body: #061226; /* fondo principal (azul medianoche) */
-        --secondary-color: #082a3a; /* tarjetas más contrastadas contra el fondo midnight */
-        --card-gradient: linear-gradient(180deg, #0b3348 0%, #0a3b55 100%); /* header más claro que el cuerpo para crear separación */
-        --card-text-color: #f6fbff; /* título: más brillante para destacar */
-        --border-color: rgba(255,255,255,0.15); /* borde sutil sobre fondo oscuro */
+        --bg-light: #07182b;
+        /* elementos ligeramente más claros */
+        --bg-body: #061226;
+        /* fondo principal (azul medianoche) */
+        --secondary-color: #082a3a;
+        /* tarjetas más contrastadas contra el fondo midnight */
+        --card-gradient: linear-gradient(180deg, #0b3348 0%, #0a3b55 100%);
+        /* header más claro que el cuerpo para crear separación */
+        --card-text-color: #f6fbff;
+        /* título: más brillante para destacar */
+        --border-color: rgba(255, 255, 255, 0.15);
+        /* borde sutil sobre fondo oscuro */
         --badge-active-bg: linear-gradient(135deg, #16a34a 0%, #059669 100%);
         --badge-active-color: #e6eef9;
-        --badge-inactive-bg: rgba(255,255,255,0.06);
+        --badge-inactive-bg: rgba(255, 255, 255, 0.06);
         --badge-inactive-color: #b8c6d6;
         --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
         --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
     }
-} 
+}
 
 /* Tema oscuro - Activado por data-theme */
 [data-theme="dark"] {
     --text-primary: #e6eef9;
-    --text-secondary: #95a9bb; /* descripción: tono azulado y más apagado */
+    --text-secondary: #95a9bb;
+    /* descripción: tono azulado y más apagado */
     --text-muted: #8899a8;
     --border-color: #404040;
     --border-light: #2a2a2a;
-    --bg-light: #07182b; /* elementos ligeramente más claros */
-    --bg-body: #061226; /* fondo principal (azul medianoche) */
-    --secondary-color: #082a3a; /* tarjetas más contrastadas contra el fondo midnight */
+    --bg-light: #07182b;
+    /* elementos ligeramente más claros */
+    --bg-body: #061226;
+    /* fondo principal (azul medianoche) */
+    --secondary-color: #082a3a;
+    /* tarjetas más contrastadas contra el fondo midnight */
     --card-gradient: linear-gradient(180deg, #061226 0%, #0b2a4a 100%);
-    --card-text-color: #f6fbff; /* título: más brillante para destacar */
+    --card-text-color: #f6fbff;
+    /* título: más brillante para destacar */
     --badge-active-bg: linear-gradient(135deg, #16a34a 0%, #059669 100%);
     --badge-active-color: #e6eef9;
-    --badge-inactive-bg: rgba(255,255,255,0.06);
+    --badge-inactive-bg: rgba(255, 255, 255, 0.06);
     --badge-inactive-color: #b8c6d6;
-    --border-color: rgba(255,255,255,0.15); /* borde sutil sobre fondo oscuro */
+    --border-color: rgba(255, 255, 255, 0.15);
+    /* borde sutil sobre fondo oscuro */
     --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
     --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.4);
 }
@@ -87,13 +105,23 @@ body {
 .materias-header h1 {
     margin: 0;
     font-weight: 700;
-    font-size: 2rem;
+    font-size: 1.75rem;
 }
 
 .materias-header p {
-    margin: 0.5rem 0 0 0;
-    opacity: 0.9;
-    font-size: 0.95rem;
+    margin: 0.25rem 0 0 0;
+    opacity: 0.85;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 576px) {
+    .materias-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .materias-header h1 {
+        font-size: 1.4rem;
+    }
 }
 
 /* ===== BOTÓN AGREGAR ===== */
@@ -102,10 +130,26 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     transition: all 0.3s ease;
     font-weight: 600;
-    padding: 0.6rem 1.2rem;
+    padding: 0.5rem 1rem;
     border-radius: 0.5rem;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 576px) {
+    .btn-agregar {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .select-sort-custom {
+        padding-top: 0.4rem !important;
+        padding-bottom: 0.4rem !important;
+        padding-right: 1.5rem !important;
+        font-size: 0.75rem !important;
+    }
 }
 
 .btn-agregar:hover {
@@ -120,7 +164,8 @@ body {
 
 /* ===== CARDS DE MATERIAS ===== */
 .materia-card {
-    position: relative; /* Para que el stretched-link funcione correctamente con los botones de acción */
+    position: relative;
+    /* Para que el stretched-link funcione correctamente con los botones de acción */
     background: var(--secondary-color);
     border-radius: 1rem;
     border: 1px solid var(--border-color);
@@ -138,21 +183,24 @@ body {
 .materia-card-header {
     background: var(--card-gradient);
     color: var(--card-text-color);
-    padding: 1.5rem;
+    padding: 1rem 1.25rem;
     border-radius: 1rem 1rem 0 0;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset; /* ligero detalle para separar del cuerpo */
-    border-bottom: 1px solid var(--border-color); /* separación tonal clara/oscura */
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04) inset;
+    /* ligero detalle para separar del cuerpo */
+    border-bottom: 1px solid var(--border-color);
+    /* separación tonal clara/oscura */
 }
 
 .materia-card-title {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
-    color: var(--card-text-color); /* asegurar que el título use la variable de título */
+    color: var(--card-text-color);
+    /* asegurar que el título use la variable de título */
 }
 
 .materia-card-badge {
@@ -163,19 +211,19 @@ body {
     color: var(--badge-active-color);
     white-space: nowrap;
     flex-shrink: 0;
-    border: 1px solid rgba(0,0,0,0.03);
+    border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 /* Cuando tenga la clase bg-secondary (inactiva) */
 .materia-card-badge.bg-secondary {
     background: var(--badge-inactive-bg) !important;
     color: var(--badge-inactive-color) !important;
-    border: 1px solid rgba(0,0,0,0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Body de card */
 .materia-card-body {
-    padding: 1.5rem;
+    padding: 1.25rem;
 }
 
 /* Asegurar que el texto de descripción de la card respete el tema */
@@ -267,7 +315,7 @@ body {
 
 /* Footer de card */
 .materia-card-footer {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
     border-top: 1px solid var(--border-light);
     display: flex;
     gap: 0.5rem;
@@ -279,83 +327,79 @@ body {
     font-size: 0.85rem;
 }
 
-/* ===== VISTA DE LISTA (TOGGLE VIEW) ===== */
 .card-list-view {
-    flex-direction: row;
-    align-items: center;
-    border: none;
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
-    min-height: 56px;
-    border-radius: 0.25rem;
+    position: relative;
+    background: var(--secondary-color);
+    border-radius: 1rem;
+    min-height: 75px;
+    transition: background-color 0.3s ease;
 }
 
-.card-list-view .materia-card-header {
-    flex: 0 0 160px;
-    align-self: stretch;
-    border-radius: 0.25rem 0 0 0.25rem;
-    border-right: none;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0.5rem 1rem;
-}
-
-.card-list-view .materia-card-body {
-    flex: 1;
+.card-list-sidebar {
+    width: 200px;
+    min-height: 75px;
+    background: var(--primary-gradient);
+    color: white;
+    padding: 0.75rem 1.25rem !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0.25rem 1rem;
-    gap: 0;
+    border-radius: 1rem 0 0 1rem;
+    flex-shrink: 0;
 }
 
-.card-list-view .materia-card-footer {
-    flex: 0 0 auto;
-    border-top: none;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    flex-direction: row;
-    gap: 0.5rem;
-    align-self: center;
+.card-list-sidebar h3 {
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.3;
 }
 
-/* Corrección de botones alargados */
-.card-list-view .materia-card-footer button {
-    flex: 0 0 auto;
-    width: auto;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.8rem;
+.card-list-content {
+    border-right: 1px solid var(--border-light);
+    padding: 0.75rem 1.25rem !important;
 }
 
-@media (min-width: 768px) {
-    .card-list-view .materia-card-header {
-        flex: 0 0 200px;
-    }
-    
-    .card-list-view .materia-card-body {
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 1.5rem;
-    }
-    
-    /* Reordenar: Criterios a la izquierda (order -1), Descripción a la derecha */
-    .card-list-view .materia-card-body > div {
-        order: -1;
-        min-width: 140px;
+.card-list-actions {
+    min-width: 140px;
+    justify-content: flex-end;
+}
+
+/* Ajustes responsivos para lista en móviles */
+@media (max-width: 768px) {
+    .card-list-view {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        min-height: auto;
     }
 
-    .card-list-view .materia-card-body p {
-        margin: 0;
-        flex: 0 1 auto;
-        max-width: 60%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        order: 1;
-        padding-left: 1rem;
-        border-left: 1px solid var(--border-light);
+    .card-list-sidebar {
+        width: 100%;
+        min-height: auto;
+        padding: 0.75rem 1.25rem !important;
+        border-radius: 1rem 1rem 0 0;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .card-list-sidebar .small {
+        display: none !important;
+    }
+
+    .card-list-content {
+        padding: 1.25rem !important;
+        border-right: none;
+    }
+
+    .card-list-content h3 {
+        font-size: 1.1rem;
+    }
+
+    .card-list-actions {
+        padding: 1rem !important;
+        justify-content: center;
+        width: 100%;
+        border-top: 1px solid var(--border-light);
     }
 }
 
@@ -431,7 +475,7 @@ body {
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .form-control:focus,
@@ -568,6 +612,7 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -598,7 +643,8 @@ body {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 576px) {
     .row {
-        --bs-gutter-x: 1rem; /* Menor espacio entre columnas en móvil */
+        --bs-gutter-x: 1rem;
+        /* Menor espacio entre columnas en móvil */
     }
 
     .materias-header {
@@ -707,7 +753,8 @@ body {
     left: 2rem;
     bottom: 2rem;
     top: auto;
-    z-index: 1040; /* Por encima del contenido pero debajo del menú abierto */
+    z-index: 1040;
+    /* Por encima del contenido pero debajo del menú abierto */
     border-radius: 50%;
     width: 3.5rem;
     height: 3.5rem;
@@ -729,7 +776,7 @@ body {
 /* Ajuste ancho offcanvas en móvil para que no ocupe todo */
 @media (max-width: 576px) {
     .offcanvas-start {
-        width: 85% !important; 
+        width: 85% !important;
         max-width: 300px;
     }
 }
@@ -777,4 +824,76 @@ body {
     background-color: var(--bg-light);
     color: var(--primary-color);
     padding-left: 1.5rem;
+}
+
+/* ===== SELECTION MODE (Eliminación Múltiple) ===== */
+.selection-bar {
+    position: fixed;
+    top: auto;
+    bottom: 24px;
+    left: 50%;
+    width: 95%;
+    max-width: 550px;
+    height: auto;
+    min-height: 60px;
+    padding: 0.25rem 0;
+    background: var(--primary-gradient);
+    z-index: 1100;
+    transform: translate(-50%, 150%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 100px;
+}
+
+.selection-bar.show {
+    transform: translate(-50%, 0);
+}
+
+/* Botón de Selección en Tarjeta */
+.materia-select-btn {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 28px;
+    height: 28px;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 20;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    border: 1px solid var(--border-color);
+}
+
+/* Mostrar botón al hover o si está seleccionado o en modo selección */
+.materia-card:hover .materia-select-btn,
+.materia-select-btn.checked,
+.selection-active .materia-select-btn {
+    opacity: 1;
+    transform: scale(1);
+    top: -8px;
+    left: -8px;
+}
+
+.materia-select-btn.checked {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.materia-card.selected {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px var(--primary-color) !important;
+    background-color: rgba(102, 126, 234, 0.05) !important; /* Tinte sutil idéntico a notas */
 }

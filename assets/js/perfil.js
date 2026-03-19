@@ -79,10 +79,10 @@ function showToast(message, type = 'info') {
 
 async function cargarDatosPerfil() {
     try {
-        const response = await fetch('../backend/perfil_proceso.php', {
+        const response = await fetch('../backend/auth/auth_controller.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accion: 'obtener_datos' })
+            body: JSON.stringify({ accion: 'perfil_ver' })
         });
         const data = await response.json();
 
@@ -110,11 +110,11 @@ async function actualizarPerfil() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
     
     try {
-        const response = await fetch('../backend/perfil_proceso.php', {
+        const response = await fetch('../backend/auth/auth_controller.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                accion: 'actualizar_perfil',
+                accion: 'perfil_actualizar',
                 nombre: nombre
             })
         });
@@ -153,11 +153,11 @@ async function cambiarPassword() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
 
     try {
-        const response = await fetch('../backend/perfil_proceso.php', {
+        const response = await fetch('../backend/auth/auth_controller.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                accion: 'cambiar_password',
+                accion: 'perfil_cambiar_password',
                 password_actual: actual,
                 password_nueva: nueva,
                 password_confirm: confirm
@@ -194,11 +194,11 @@ async function eliminarCuenta() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Eliminando...';
 
     try {
-        const response = await fetch('../backend/perfil_proceso.php', {
+        const response = await fetch('../backend/auth/auth_controller.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                accion: 'eliminar_cuenta',
+                accion: 'perfil_eliminar_cuenta',
                 password: password
             })
         });
@@ -222,7 +222,7 @@ async function cargarActividad() {
     const container = document.getElementById('activity-container');
     
     try {
-        const response = await fetch('../backend/perfil_proceso.php', {
+        const response = await fetch('../backend/auth/auth_controller.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ accion: 'obtener_actividad' })

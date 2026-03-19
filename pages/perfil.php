@@ -1,6 +1,6 @@
 <?php
 require_once '../backend/config/config.php';
-require_once '../backend/autologin.php';
+require_once '../backend/auth/autologin.php';
 
 // Verificar sesión
 if (!isset($_SESSION['usuario_id'])) {
@@ -24,7 +24,7 @@ if (!isset($_SESSION['usuario_id'])) {
 <body>
     
     <!-- Navbar -->
-    <?php include '../components/navbar.php'; ?>
+    <?php include 'components/navbar.php'; ?>
 
     <div class="container py-5" id="perfil-container">
         
