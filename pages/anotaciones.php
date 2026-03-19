@@ -51,7 +51,7 @@ if(!isset($_SESSION['usuario'])){
                             <div class="position-relative d-flex align-items-center flex-grow-1 filter-wrapper">
                                 <i class="fas fa-book filter-icon-overlay"></i>
                                 <select class="form-select select-filter-custom" id="filterMateria">
-                                    <option value="all" style="background-color: #333; color: white;">Todas</option>
+                                    <option value="all">Todas</option>
                                     <!-- Se llenará con JS -->
                                 </select>
                             </div>
@@ -59,9 +59,9 @@ if(!isset($_SESSION['usuario'])){
                             <div class="position-relative d-flex align-items-center flex-grow-1 filter-wrapper">
                                 <i class="fas fa-sort-amount-down filter-icon-overlay"></i>
                                 <select class="form-select select-filter-custom" id="sortNotes">
-                                    <option value="edited_desc" style="background-color: #333; color: white;">Editado (Reciente)</option>
-                                    <option value="created_desc" style="background-color: #333; color: white;">Creado (Nuevo)</option>
-                                    <option value="created_asc" style="background-color: #333; color: white;">Creado (Antiguo)</option>
+                                    <option value="edited_desc">Editado (Reciente)</option>
+                                    <option value="created_desc">Creado (Nuevo)</option>
+                                    <option value="created_asc">Creado (Antiguo)</option>
                                 </select>
                             </div>
                             <button class="btn btn-filter-clear-premium" id="btnClearFilters" title="Limpiar filtros">

@@ -362,8 +362,8 @@
 }
 
 .select-filter-custom option {
-    background-color: #333 !important;
-    color: white !important;
+    background-color: var(--bg-light) !important;
+    color: var(--text-primary) !important;
 }
 
 /* El input date no necesita el chevron del select */

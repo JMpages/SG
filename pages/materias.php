@@ -87,6 +87,12 @@ if (!isset($_SESSION['usuario'])) {
             flex-direction: column;
             justify-content: center;
         }
+
+        /* Opciones del select adaptables al tema (Sobrescribe estilos del navegador) */
+        .select-sort-custom option, .select-sort-custom optgroup {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+        }
     </style>
 </head>
 <body>
@@ -115,18 +121,24 @@ if (!isset($_SESSION['usuario'])) {
                             </button>
                         </div>
 
-                        <!-- 2. Ordenamiento (Centro) -->
-                        <div class="flex-grow-1 flex-md-grow-0" style="min-width: 90px; max-width: 140px;">
-                             <div class="position-relative d-flex align-items-center">
-                                <i class="fas fa-sort sort-icon-overlay" style="left: 0.65rem; font-size: 0.7rem; top: 50%; transform: translateY(-50%); opacity: 0.8;"></i>
-                                <select class="form-select select-sort-custom" id="selectSort" 
-                                        style="padding-left: 1.6rem !important; padding-right: 1.4rem !important; font-size: 0.75rem !important; height: 35px; text-overflow: ellipsis;">
-                                    <option value="newest" style="background-color: #333; color: white;">Recientes</option>
-                                    <option value="oldest" style="background-color: #333; color: white;">Antiguas</option>
-                                    <option value="alpha-asc" style="background-color: #333; color: white;">A-Z</option>
-                                    <option value="alpha-desc" style="background-color: #333; color: white;">Z-A</option>
+                        <!-- 1.5 Filtros y Ordenamiento Unificados -->
+                        <div class="flex-grow-1 flex-md-grow-0">
+                            <div class="position-relative d-flex align-items-center">
+                                <i class="fas fa-filter sort-icon-overlay" id="sortIcon" style="left: 0.7rem; font-size: 0.7rem; top: 50%; transform: translateY(-50%); opacity: 0.8; z-index: 5;"></i>
+                                <select class="form-select select-sort-custom" id="unifiedFilterSort" style="padding-left: 1.8rem !important; height: 35px; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; min-width: 140px;">
+                                    <optgroup label="Mostrar">
+                                        <option value="filter_1">Activas</option>
+                                        <option value="filter_0">Inactivas</option>
+                                        <option value="filter_all">Todas</option>
+                                    </optgroup>
+                                    <optgroup label="Ordenar por">
+                                        <option value="sort_newest">Recientes</option>
+                                        <option value="sort_oldest">Antiguas</option>
+                                        <option value="sort_alpha-asc">A-Z</option>
+                                        <option value="sort_alpha-desc">Z-A</option>
+                                    </optgroup>
                                 </select>
-                             </div>
+                            </div>
                         </div>
 
                         <!-- 3. Agregar (Derecha) -->
@@ -498,25 +510,33 @@ if (!isset($_SESSION['usuario'])) {
         let materiasCache = [];
         let currentView = localStorage.getItem('materiaViewMode') || 'grid';
         let currentSort = localStorage.getItem('materiaSortMode') || 'newest';
+        let currentFilter = '1'; // Por defecto mostrar solo activas
         let isSelectionMode = false;
         let selectedMateriaIds = new Set();
 
         // Inicializar botones de ordenamiento
         function initSortButtons() {
-            const selectSort = document.getElementById('selectSort');
+            const select = document.getElementById('unifiedFilterSort');
             
-            // Establecer estado inicial
-            selectSort.value = currentSort;
+            // Establecer valor inicial (por defecto Activas)
+            select.value = `filter_${currentFilter}`;
 
-            selectSort.addEventListener('change', (e) => {
-                cambiarOrden(e.target.value);
+            select.addEventListener('change', (e) => {
+                const val = e.target.value;
+                
+                if (val.startsWith('filter_')) {
+                    currentFilter = val.replace('filter_', '');
+                    // Actualizar icono
+                    document.getElementById('sortIcon').className = 'fas fa-filter sort-icon-overlay';
+                } else if (val.startsWith('sort_')) {
+                    currentSort = val.replace('sort_', '');
+                    localStorage.setItem('materiaSortMode', currentSort);
+                    // Actualizar icono
+                    document.getElementById('sortIcon').className = 'fas fa-sort sort-icon-overlay';
+                }
+                
+                renderMaterias();
             });
-        }
-
-        function cambiarOrden(sortMode) {
-            currentSort = sortMode;
-            localStorage.setItem('materiaSortMode', sortMode);
-            renderMaterias();
         }
 
         function aplicarOrden(materias) {
@@ -696,16 +716,22 @@ if (!isset($_SESSION['usuario'])) {
             const container = document.getElementById('materiasContainer');
             const indiceLista = document.getElementById('indiceLista');
             
-            if (materiasCache.length === 0) {
+            // Filtrado por estado (Activa/Inactiva)
+            let materiasFiltradas = materiasCache;
+            if (currentFilter !== 'all') {
+                materiasFiltradas = materiasCache.filter(m => m.activa == currentFilter);
+            }
+
+            if (materiasFiltradas.length === 0) {
                 container.innerHTML = `
                     <div class="col-12">
                         <div class="empty-state">
-                            <i class="fas fa-inbox"></i>
-                            <p>No hay materias registradas</p>
-                            <small>Agrega tu primera materia para comenzar</small>
+                            <i class="fas ${materiasCache.length > 0 ? 'fa-filter' : 'fa-inbox'}"></i>
+                            <p>${materiasCache.length > 0 ? 'No hay materias con este estado' : 'No hay materias registradas'}</p>
+                            <small>${materiasCache.length > 0 ? 'Prueba cambiando el filtro de estado' : 'Agrega tu primera materia para comenzar'}</small>
                         </div>
                     </div>`;
-                indiceLista.innerHTML = '<div class="text-center text-muted p-3">No hay materias</div>';
+                indiceLista.innerHTML = `<div class="text-center text-muted p-3">${materiasCache.length > 0 ? 'Sin resultados' : 'No hay materias'}</div>`;
                 return;
             }
 
@@ -713,7 +739,7 @@ if (!isset($_SESSION['usuario'])) {
             let indiceHtml = '';
 
             // Aplicar ordenamiento antes de renderizar
-            const materiasOrdenadas = aplicarOrden(materiasCache);
+            const materiasOrdenadas = aplicarOrden(materiasFiltradas);
 
             // Determinar clases según la vista actual
             // col-12 col-md-6 col-lg-4 col-xl-3 para un diseño más equilibrado (máx 4 por fila)
