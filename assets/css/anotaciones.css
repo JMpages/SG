@@ -1346,6 +1346,41 @@
     border-radius: 100px;
 }
 
+@media (max-width: 576px) {
+    .selection-bar {
+        bottom: 15px;
+        width: 98%;
+        min-height: 50px;
+        padding: 0.15rem 0.75rem;
+    }
+    
+    .selection-bar #selectionCount {
+        font-size: 0.95rem !important;
+        white-space: nowrap;
+    }
+    
+    .selection-bar .btn-link {
+        font-size: 1.1rem !important;
+    }
+    
+    .selection-bar .btn-sm {
+        height: 32px !important;
+        width: 32px !important;
+        padding: 0 !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .selection-bar #btnSelectAll {
+        width: auto !important;
+        padding: 0.2rem 0.6rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .selection-bar .gap-3 {
+        gap: 0.5rem !important;
+    }
+}
+
 .selection-bar.show {
     transform: translate(-50%, 0);
 }

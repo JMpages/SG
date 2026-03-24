@@ -145,8 +145,14 @@ try {
             if (!empty($criterios)) {
                 $stmtCrit = $pdo->prepare("INSERT INTO criterios_evaluacion (materia_id, nombre, cantidad_evaluaciones, porcentaje, nota_maxima) VALUES (?, ?, ?, ?, ?)");
                 foreach ($criterios as $c) {
+                    $c_nombre = isset($c['nombre']) ? trim($c['nombre']) : '';
+                    $c_cantidad = isset($c['cantidad']) ? (int)$c['cantidad'] : 1;
+                    $c_porcentaje = isset($c['porcentaje']) ? (float)$c['porcentaje'] : 0;
                     $notaMax = isset($c['nota_maxima']) ? (float)$c['nota_maxima'] : 100.00;
-                    $stmtCrit->execute([$materia_id_actual, trim($c['nombre']), (int)$c['cantidad'], (float)$c['porcentaje'], $notaMax]);
+                    
+                    if (empty($c_nombre)) continue; // Omitir si no tiene nombre
+                    
+                    $stmtCrit->execute([$materia_id_actual, $c_nombre, $c_cantidad, $c_porcentaje, $notaMax]);
                 }
             }
             $pdo->commit();
@@ -187,8 +193,19 @@ try {
         default:
             throw new Exception('Acción no válida');
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
-    http_response_code($e->getCode() ?: 500);
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    
+    // Asegurar que el código de respuesta sea un entero válido para HTTP (100-599)
+    $code = $e->getCode();
+    if (!is_int($code) || $code < 100 || $code > 599) {
+        $code = 500;
+    }
+    
+    http_response_code($code);
+    echo json_encode([
+        'status' => 'error', 
+        'message' => $e->getMessage(),
+        'debug' => (E_ALL === error_reporting()) ? $e->getFile() . ' L:' . $e->getLine() : null
+    ]);
 }

@@ -521,15 +521,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function initSelectionMode() {
         // 1. Inyectar Barra de Selección en el body
         const selectionBarHtml = `
-            <div id="selectionBar" class="selection-bar px-4">
-                <div class="d-flex align-items-center gap-3">
+            <div id="selectionBar" class="selection-bar px-md-4 px-3">
+                <div class="d-flex align-items-center gap-md-3 gap-2">
                     <button id="btnCancelSelection" class="btn btn-link text-white p-0 fs-5"><i class="fas fa-times"></i></button>
                     <span id="selectionCount" class="fw-bold fs-5">0 seleccionadas</span>
                 </div>
-                <div class="d-flex gap-3 align-items-center">
+                <div class="d-flex gap-md-3 gap-2 align-items-center">
                      <button id="btnExportSelected" class="btn btn-light text-primary btn-sm rounded-circle shadow-sm" style="width: 36px; height: 36px;" disabled title="Exportar a PDF"><i class="fas fa-file-pdf"></i></button>
                      <button id="btnDeleteSelected" class="btn btn-light text-danger btn-sm rounded-circle shadow-sm" style="width: 36px; height: 36px;" disabled title="Eliminar"><i class="fas fa-trash"></i></button>
-                     <button id="btnSelectAll" class="btn btn-outline-light btn-sm rounded-pill px-3 ms-2">Todo</button>
+                     <button id="btnSelectAll" class="btn btn-outline-light btn-sm rounded-pill px-md-3 px-2 ms-md-2">Todo</button>
                 </div>
             </div>`;
         document.body.insertAdjacentHTML('beforeend', selectionBarHtml);
