@@ -64,6 +64,7 @@ CREATE TABLE criterios_evaluacion (
   materia_id INT NOT NULL,
   nombre VARCHAR(50) NOT NULL,
   porcentaje DECIMAL(5,2) NOT NULL,
+  nota_maxima DECIMAL(5,2) NOT NULL DEFAULT 100.00,
   cantidad_evaluaciones INT NOT NULL DEFAULT 1,
   fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY idx_materia (materia_id),
