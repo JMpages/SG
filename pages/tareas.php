@@ -159,8 +159,28 @@ if (!isset($_SESSION['usuario_id'])) {
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="tareaFecha" class="form-label">Fecha de Entrega <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="tareaFecha" name="fecha_entrega" required>
+                            <label class="form-label">Fecha de Entrega <span class="text-danger">*</span></label>
+                            <div class="date-input-group d-flex gap-2">
+                                <input type="number" class="form-control flex-grow-1" id="tareaDia" placeholder="Día" min="1" max="31" required>
+                                <select class="form-select flex-grow-2" id="tareaMes" title="Mes" required>
+                                    <option value="">Mes</option>
+                                    <option value="01">Enero</option>
+                                    <option value="02">Febrero</option>
+                                    <option value="03">Marzo</option>
+                                    <option value="04">Abril</option>
+                                    <option value="05">Mayo</option>
+                                    <option value="06">Junio</option>
+                                    <option value="07">Julio</option>
+                                    <option value="08">Agosto</option>
+                                    <option value="09">Septiembre</option>
+                                    <option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option>
+                                    <option value="12">Diciembre</option>
+                                </select>
+                                <input type="number" class="form-control flex-grow-1" id="tareaAnio" placeholder="Año" min="2000" max="2100" value="<?php echo date('Y'); ?>" required>
+                            </div>
+                            <!-- Campo oculto para mantener compatibilidad con el backend -->
+                            <input type="hidden" id="tareaFecha" name="fecha_entrega">
                         </div>
                         <div class="mb-3">
                             <label for="tareaDescripcion" class="form-label">Descripción (Opcional)</label>
@@ -328,8 +348,24 @@ if (!isset($_SESSION['usuario_id'])) {
             
             // UX: Mejoras de velocidad (Foco, Fecha Hoy, Pre-selección Materia)
             document.getElementById('tareaTitulo').focus();
+            
+            // Si no hay fecha, poner hoy
             if(!document.getElementById('tareaFecha').value) {
-                document.getElementById('tareaFecha').value = new Date().toISOString().split('T')[0];
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('tareaFecha').value = today;
+                
+                // Actualizar campos desglosados
+                const [anio, mes, dia] = today.split('-');
+                document.getElementById('tareaDia').value = dia;
+                document.getElementById('tareaMes').value = mes;
+                document.getElementById('tareaAnio').value = anio;
+            } else {
+                // Si ya hay fecha (ej: al editar), asegurar que los campos desglosados coincidan
+                const currentFecha = document.getElementById('tareaFecha').value;
+                const [anio, mes, dia] = currentFecha.split('-');
+                document.getElementById('tareaDia').value = dia;
+                document.getElementById('tareaMes').value = mes;
+                document.getElementById('tareaAnio').value = anio;
             }
             // Si ya estás filtrando por una materia, la seleccionamos automáticamente
             if(!tareaId && window.app && window.app.state.filtroMateria) {
@@ -377,8 +413,11 @@ if (!isset($_SESSION['usuario_id'])) {
             const id = document.getElementById('tareaId').value;
 
             if(!titulo || !materiaId || !fecha) {
-                // Usamos el toast existente si es posible, o alert simple
-                alert('Por favor completa los campos obligatorios (Título, Materia, Fecha)');
+                if (window.app && window.app.showToast) {
+                    window.app.showToast('Por favor completa los campos obligatorios (Título, Materia, Fecha)', 'error');
+                } else {
+                    alert('Por favor completa los campos obligatorios (Título, Materia, Fecha)');
+                }
                 return;
             }
 
@@ -392,7 +431,11 @@ if (!isset($_SESSION['usuario_id'])) {
                 const numVal = selectNumero.value;
                 
                 if(!critVal || !numVal) {
-                    alert('Si activas la vinculación, debes seleccionar el Tipo y el Número de evaluación.');
+                    if (window.app && window.app.showToast) {
+                        window.app.showToast('Si activas la vinculación, debes seleccionar el Tipo y el Número de evaluación.', 'error');
+                    } else {
+                        alert('Si activas la vinculación, debes seleccionar el Tipo y el Número de evaluación.');
+                    }
                     return;
                 }
                 es_calificada = 1;
@@ -424,11 +467,19 @@ if (!isset($_SESSION['usuario_id'])) {
                     // Recargar página o actualizar lista (asumimos recarga para simplificar integración)
                     window.location.reload();
                 } else {
-                    alert('Error: ' + result.message);
+                    if (window.app && window.app.showToast) {
+                        window.app.showToast('Error: ' + result.message, 'error');
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
                 }
             } catch(error) {
                 console.error(error);
-                alert('Error de conexión al guardar la tarea');
+                if (window.app && window.app.showToast) {
+                    window.app.showToast('Error de conexión al guardar la tarea', 'error');
+                } else {
+                    alert('Error de conexión al guardar la tarea');
+                }
             }
         });
 

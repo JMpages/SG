@@ -21,9 +21,9 @@ if ($metodo === 'POST') {
 try {
     switch ($accion) {
         case 'login':
-            $usernameOrEmail = $_POST['usuario'] ?? '';
-            $password = $_POST['password'] ?? '';
-            $recuerdame = isset($_POST['recuerdame']);
+            $usernameOrEmail = $input['usuario'] ?? '';
+            $password = $input['password'] ?? '';
+            $recuerdame = isset($input['recuerdame']);
 
             if (!$usernameOrEmail || !$password) {
                 $_SESSION['error_login'] = "Datos incompletos";
@@ -69,13 +69,12 @@ try {
                 header("Location: ../../pages/login.php");
                 exit;
             }
-            break;
 
         case 'registro':
-            $username = trim($_POST['nombre'] ?? '');
-            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-            $password = $_POST['password'] ?? '';
-            $password_confirm = $_POST['password_confirm'] ?? '';
+            $username = trim($input['nombre'] ?? '');
+            $email = filter_var($input['email'] ?? '', FILTER_VALIDATE_EMAIL);
+            $password = $input['password'] ?? '';
+            $password_confirm = $input['password_confirm'] ?? '';
 
             if (!$username || !$password || !$password_confirm) {
                 $_SESSION['errores_registro'] = ["Datos obligatorios incompletos"];
@@ -106,7 +105,6 @@ try {
 
             header("Location: ../../pages/dashboard.php");
             exit;
-            break;
 
         case 'logout':
             // Limpiar sesiones y cookies (incluyendo legacy)
@@ -122,7 +120,6 @@ try {
             setcookie('usuario_sesion', '', time() - 3600, '/');
             header("Location: ../../pages/login.php");
             exit;
-            break;
 
         case 'perfil_ver':
             if (!isset($_SESSION['usuario_id'])) throw new Exception('No autorizado', 401);
@@ -183,7 +180,9 @@ try {
         default:
             throw new Exception('Acción no permitida');
     }
-} catch (Exception $e) {
-    http_response_code($e->getCode() ?: 500);
+} catch (Throwable $e) {
+    $code = $e->getCode();
+    if (!is_int($code) || $code < 100 || $code > 599) $code = 500;
+    http_response_code($code);
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }

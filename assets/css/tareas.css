@@ -137,6 +137,34 @@ body {
     letter-spacing: 0.3px;
 }
 
+.date-input-group {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.date-input-group #tareaDia {
+    width: 65px;
+    flex: none;
+}
+
+.date-input-group #tareaMes {
+    flex: 1;
+    min-width: 100px;
+}
+
+.date-input-group #tareaAnio {
+    width: 85px;
+    flex: none;
+}
+
+@media (max-width: 360px) {
+    .date-input-group #tareaMes {
+        min-width: 80px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
 /* ===== CARDS DE TAREAS ===== */
 .tarea-card {
     background: var(--secondary-color);
@@ -193,6 +221,7 @@ body {
     margin-bottom: 1.5rem;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

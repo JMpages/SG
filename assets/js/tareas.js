@@ -39,7 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
             btnCalSemana: document.getElementById('btnCalSemana'),
             // Modal Detalle Día
             modalDetalleDia: new bootstrap.Modal(document.getElementById('modalDetalleDia')),
-            btnAgregarTareaDia: document.getElementById('btnAgregarTareaDia')
+            btnAgregarTareaDia: document.getElementById('btnAgregarTareaDia'),
+            // Nuevos elementos de fecha
+            tareaDia: document.getElementById('tareaDia'),
+            tareaMes: document.getElementById('tareaMes'),
+            tareaAnio: document.getElementById('tareaAnio'),
+            tareaFechaHidden: document.getElementById('tareaFecha')
         },
 
         init() {
@@ -108,6 +113,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.prepareCreateTask(this.state.selectedDate);
                 });
             }
+
+            // Sincronización de fecha
+            const updateHiddenDate = () => {
+                const diaRaw = this.elements.tareaDia.value;
+                const mes = this.elements.tareaMes.value;
+                const anio = this.elements.tareaAnio.value;
+                
+                if (diaRaw && mes && anio) {
+                    const dia = diaRaw.toString().padStart(2, '0');
+                    this.elements.tareaFechaHidden.value = `${anio}-${mes}-${dia}`;
+                } else {
+                    this.elements.tareaFechaHidden.value = '';
+                }
+            };
+
+            this.elements.tareaDia.addEventListener('input', (e) => {
+                if (e.target.value.length > 2) e.target.value = e.target.value.slice(0, 2);
+                updateHiddenDate();
+            });
+            this.elements.tareaMes.addEventListener('change', updateHiddenDate);
+            this.elements.tareaAnio.addEventListener('input', (e) => {
+                if (e.target.value.length > 4) e.target.value = e.target.value.slice(0, 4);
+                updateHiddenDate();
+            });
         },
 
         prepareCreateTask(date = null) {
@@ -116,10 +145,24 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.modalTitle.textContent = 'Nueva Tarea';
             this.elements.btnGuardar.textContent = 'Guardar Tarea';
             
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const [anioToday, mesToday, diaToday] = todayStr.split('-');
+
             if(date) {
-                document.getElementById('tareaFecha').value = date;
-                this.elements.modalTarea.show();
+                const [anio, mes, dia] = date.split('-');
+                this.elements.tareaDia.value = dia;
+                this.elements.tareaMes.value = mes;
+                this.elements.tareaAnio.value = anio;
+                this.elements.tareaFechaHidden.value = date;
+            } else {
+                this.elements.tareaDia.value = diaToday;
+                this.elements.tareaMes.value = mesToday;
+                this.elements.tareaAnio.value = anioToday;
+                this.elements.tareaFechaHidden.value = todayStr;
             }
+            
+            this.elements.modalTarea.show();
         },
 
         async loadMaterias() {
@@ -306,9 +349,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('tareaId').value = tarea.id;
             document.getElementById('tareaTitulo').value = tarea.titulo;
             document.getElementById('tareaMateria').value = tarea.materia_id;
-            document.getElementById('tareaFecha').value = tarea.fecha_entrega;
             document.getElementById('tareaDescripcion').value = tarea.descripcion || '';
             
+            // Poblar campos de fecha desglosados
+            if (tarea.fecha_entrega) {
+                const [anio, mes, dia] = tarea.fecha_entrega.split('-');
+                this.elements.tareaDia.value = dia;
+                this.elements.tareaMes.value = mes;
+                this.elements.tareaAnio.value = anio;
+                this.elements.tareaFechaHidden.value = tarea.fecha_entrega;
+            }
+
             this.elements.modalTitle.textContent = 'Editar Tarea';
             this.elements.btnGuardar.textContent = 'Actualizar';
             this.elements.modalTarea.show();

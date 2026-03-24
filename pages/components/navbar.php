@@ -240,7 +240,7 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
         box-shadow: none;
         border: none;
         background: transparent;
-        text-align: center;
+        text-align: left;
         padding: 0;
         margin-top: 0.5rem;
         display: none;
@@ -249,6 +249,11 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
     .dropdown-menu.active {
         display: block;
         animation: fadeIn 0.3s;
+    }
+    
+    .dropdown-item {
+        padding-left: 1rem !important;
+        justify-content: flex-start !important;
     }
     
     @keyframes fadeIn {
@@ -339,7 +344,7 @@ $ruta_backend = $es_root ? 'backend/' : '../backend/';
                             <svg class="icon-svg ms-1" style="width: 16px; height: 16px;" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </button>
                         <div class="dropdown-menu" id="dropdown">
-                            <a href="<?php echo $ruta_vistas; ?>perfil.php" class="dropdown-item justify-content-center justify-content-md-start">
+                            <a href="<?php echo $ruta_vistas; ?>perfil.php" class="dropdown-item">
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
